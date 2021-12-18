@@ -2,6 +2,7 @@ package agh.ics.oop;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class Animal implements IMapElement{
     private Vector2d position;
@@ -22,11 +23,9 @@ public class Animal implements IMapElement{
         return new Vector2d(this.position.x,this.position.y);
     }
 
-        public void move(MoveDirection direction) {
-        switch (direction) {
-            case LEFT -> this.orientation = this.orientation.previous();
-            case RIGHT -> this.orientation = this.orientation.next();
-            case FORWARD -> {
+    public void move(int directionChange) {
+        switch (directionChange) {
+            case 0 -> {
                 Vector2d tmp = new Vector2d(this.position.x, this.position.y).add(this.orientation.toUnitVector());
                 if(map.canMoveTo(tmp)){
                     positionChanged(this.position,tmp,this);
@@ -36,7 +35,7 @@ public class Animal implements IMapElement{
                     //positionChanged(tmp.subtract(this.orientation.toUnitVector()),tmp,this);
                 }
             }
-            case BACKWARD -> {
+            case 4 -> {
                 Vector2d tmp = new Vector2d(this.position.x, this.position.y).subtract(this.orientation.toUnitVector());
                 if(map.canMoveTo(tmp)){
                     positionChanged(this.position,tmp,this);
@@ -45,6 +44,9 @@ public class Animal implements IMapElement{
                     map.addElemMapBoundary(this);
                     //positionChanged(tmp.add(this.orientation.toUnitVector()),tmp,this);
                 }
+            }
+            default -> {
+                IntStream.range(0,directionChange).forEach(i -> this.orientation = this.orientation.next());
             }
         }
     }

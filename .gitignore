@@ -85,3 +85,10 @@ gradle-app.setting
 
 # Cache of project
 .gradletasknamecache
+
+#mine added
+.idea/*
+gradle/
+gradle.bat
+settings.gradle
+gradlew.bat
