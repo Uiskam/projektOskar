@@ -2,6 +2,7 @@ package agh.ics.oop;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 public class Animal implements IMapElement{
@@ -9,11 +10,15 @@ public class Animal implements IMapElement{
     private MapDirection orientation = MapDirection.NORTH;
     private final IWorldMap map;
     private final List<IPositionChangeObserver> observersList = new LinkedList<>();
+    private final int[] genotype;
+    private int energyLevel;
 
-    public Animal(IWorldMap map, Vector2d initialPosition){
+    public Animal(IWorldMap map, Vector2d initialPosition, int startingEnergy){
         this.map = map;
         addObserver((IPositionChangeObserver) this.map);
-        position = initialPosition;
+        this.position = initialPosition;
+        this.energyLevel = startingEnergy;
+        this.genotype = new Random().ints(32,0,7).toArray();
     }
     public String toString() {
         return this.orientation.toString();
@@ -23,7 +28,8 @@ public class Animal implements IMapElement{
         return new Vector2d(this.position.x,this.position.y);
     }
 
-    public void move(int directionChange) {
+    public void move() {
+        int directionChange = genotype[new Random().nextInt(32)];
         switch (directionChange) {
             case 0 -> {
                 Vector2d tmp = new Vector2d(this.position.x, this.position.y).add(this.orientation.toUnitVector());
