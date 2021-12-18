@@ -1,1 +1,3 @@
 # projektOskar
+
+WYMAGANIA:
