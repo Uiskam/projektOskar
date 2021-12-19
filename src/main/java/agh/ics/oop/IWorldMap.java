@@ -1,5 +1,7 @@
 package agh.ics.oop;
 
+import java.util.HashMap;
+
 /**
  * The interface responsible for interacting with the map of the world.
  * Assumes that Vector2d and MoveDirection classes are defined.
@@ -7,7 +9,7 @@ package agh.ics.oop;
  * @author apohllo
  *
  */
-public interface IWorldMap {
+public interface IWorldMap{
     /**
      * Indicate if any object can move to the given position.
      *
@@ -22,9 +24,17 @@ public interface IWorldMap {
      *
      * @param animal
      *            The animal to place on the map.
-     * @return True if the animal was placed. The animal cannot be placed if the map is already occupied.
+     *
      */
-    void place(Animal animal);
+    void  place(Animal animal);
+
+    /**
+     *
+     * @param child
+     *      newborn to be placed
+     *
+     */
+    void placeChild(Animal child);
 
     /**
      * Return true if given position on the map is occupied. Should not be
@@ -46,6 +56,20 @@ public interface IWorldMap {
      */
     Object objectAt(Vector2d position);
 
-    void removeElemMapBoundary(IMapElement object);
-    void addElemMapBoundary(IMapElement object);
+    /**
+     *
+     * @return map size as array of Vector2d = {leftBottomCorner, upperRightCorner};
+     */
+    Vector2d[] getMapSize();
+
+    /**
+     * Removes all dead animals from the map
+     */
+    void removeDeadAnimals();
+
+    /**
+     *
+     * @return Returns HashMap with all objects present on the map.
+     */
+    HashMap<Vector2d, IMapElement> getObjects();
 }

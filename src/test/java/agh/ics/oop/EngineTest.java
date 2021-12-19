@@ -27,7 +27,7 @@ public class EngineTest {
         }
         final List<Animal> animal = new ArrayList<>();
         for (int i = 0; i < poistions.length; i++){//sprawdzanie place
-            Animal tmp = new Animal(map,poistions[i]);
+            Animal tmp = new Animal(map,poistions[i],10,1);
             if (i <= 1) {
                 map.place(tmp);
                 animal.add(tmp);
@@ -41,7 +41,7 @@ public class EngineTest {
 
         }
         for (int i = 0; i < moves.length; i++) {//sprawdzanie porpawności ruchów
-            animal.get(i % animal.size()).move(moves[i]);
+            animal.get(i % animal.size()).move();
             assertEquals(animal.get(i % animal.size()),map.objectAt(correctPosition[i]),"corraction of moves fail");
         }
 

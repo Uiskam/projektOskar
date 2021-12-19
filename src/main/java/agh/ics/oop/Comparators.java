@@ -4,6 +4,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 
+class EnergyComparator implements Comparator<Animal> {
+    @Override
+    public int compare(Animal animal0, Animal animal1){
+        return Integer.compare(animal1.getEnergy(), animal0.getEnergy());
+    }
+}
 class ComparatorX implements Comparator<IMapElement> {
     @Override
     public int compare(IMapElement o1, IMapElement o2) {

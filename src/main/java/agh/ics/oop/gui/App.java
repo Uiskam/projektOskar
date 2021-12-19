@@ -6,7 +6,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -18,7 +17,6 @@ import java.util.HashMap;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.decrementExact;
-import static java.lang.System.exit;
 import static java.lang.System.*;
 public class App extends Application implements IAnimalMoved{
     private AbstractWorldMap map;
@@ -41,30 +39,33 @@ public class App extends Application implements IAnimalMoved{
     }
 
     @Override
-    public void init(){
+    public void init() throws IllegalArgumentException{
         //String[] test_sq  = {"f", "b", "r", "l", "f", "f", "r", "r", "f", "f", "f", "f", "f", "f", "f", "f"};
         //String[] test_sq = getParameters().getRaw().toArray(new String[0]);
         //MoveDirection[] directions = OptionsParser.parse(test_sq);
 
-        this.map = new GrassField(10);
+        this.map = new WrappedMap(10,10);
         Vector2d[] positions = {new Vector2d(2, 2), new Vector2d(3, 4)};
-        SimulationEngine engine = new SimulationEngine(null,map, positions,300);
+        SimulationEngine engine = new SimulationEngine(map, positions,300,10,10);
         engine.addObserver(this);
 
         Button startButton = new Button("START");
         TextField inputFiled = new TextField();
         controls = new VBox(startButton,inputFiled);
         hBox = new HBox(controls,gridPane);
-        try {
+
             startButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
 
-
                     String tmp = inputFiled.getText();
                     String[] moves = tmp.split(" +");
-                    MoveDirection[] directions = OptionsParser.parse(moves);
-                    engine.setMoves(directions);
+                    try {
+                        MoveDirection[] directions = OptionsParser.parse(moves);
+                        engine.setMoves(directions);
+                    }catch (IllegalArgumentException ex){
+                        out.println(ex.getMessage());
+                    }
                     createGrid();
                     gridPane.setGridLinesVisible(true);
                     engineThread = new Thread(engine);
@@ -72,9 +73,7 @@ public class App extends Application implements IAnimalMoved{
 
                 }
             });
-        }catch (IllegalThreadStateException ex){
-            out.println("BłFA DSFSFASFDSAFDASFDSAFSAąd");
-        }
+
 
     }
 
