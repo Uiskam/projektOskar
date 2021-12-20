@@ -48,7 +48,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     public void place(Animal animal) {
         if (!animal.getPosition().follows(mapSize[0]) || !animal.getPosition().precedes(mapSize[1]))
-            throw new IllegalArgumentException(animal.getPosition() + " is oustide the map");
+            throw new IllegalArgumentException(animal.getPosition() + " is outside the map");
         if (!animalMap.containsKey(animal.getPosition())) {
             animalMap.put(animal.getPosition(), new TreeSet<>(new EnergyComparator()));
             animalMap.get(animal.getPosition()).add(animal);
@@ -79,7 +79,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         return mapSize;
     }
 
-    ;
 
     public void removeDeadAnimals() {
         animalMap.keySet().forEach(position ->
@@ -123,7 +122,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         }
         for (Animal animal : animals) {
             if (animals.first().getEnergy() == animal.getEnergy())
-                animal.energyGain( plantEnergy / howManyWillEat);
+                animal.energyGain(plantEnergy / howManyWillEat);
             else
                 break;
         }
@@ -170,7 +169,65 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         Random generator = new Random();
         int jungleWidth = jungleSize[1].x - jungleSize[0].x + 1;
         int jungleHeight = jungleSize[1].y - jungleSize[0].y + 1;
-        Grass newGrass = new Grass(new Vector2d(generator.nextInt(jungleWidth) + jungleSize[0].x, generator.nextInt(jungleHeight) + jungleSize[0].y));
+        Vector2d newGrassPosition = new Vector2d(-1, -1);
+
+        for (int i = 0; i < 100; i++) {
+            newGrassPosition = new Vector2d(generator.nextInt(jungleWidth) + jungleSize[0].x, generator.nextInt(jungleHeight) + jungleSize[0].y);
+            if (!grassMap.containsKey(newGrassPosition))
+                break;
+        }
+        if (!grassMap.containsKey(newGrassPosition))
+            grassMap.put(newGrassPosition, new Grass(newGrassPosition));
+        else {
+            newGrassPosition = bruteJungleGenerator();
+            if (!newGrassPosition.equals(new Vector2d(-1, -1)))
+                grassMap.put(newGrassPosition, new Grass(newGrassPosition));
+        }
+
+        for (int i = 0; i < 100; i++) {
+            int newX = generator.nextInt(mapSize[1].x + 1 - (jungleSize[1].x - jungleSize[0].x + 1));
+            int newY = generator.nextInt(mapSize[1].y + 1 - (jungleSize[1].y - jungleSize[0].y + 1));
+
+            if (jungleSize[0].x <= newX && newX <= jungleSize[1].x)
+                newX += (jungleSize[1].x - jungleSize[0].x + 1);
+            if (jungleSize[0].y <= newY && newY <= jungleSize[1].y)
+                newY += (jungleSize[1].y - jungleSize[0].y + 1);
+
+            newGrassPosition = new Vector2d(newX, newY);
+            if (!grassMap.containsKey(newGrassPosition))
+                grassMap.put(newGrassPosition, new Grass(newGrassPosition));
+            else{
+                newGrassPosition = bruteSavannaGenerator();
+                if(!newGrassPosition.equals(new Vector2d(-1,-1)))
+                    grassMap.put(newGrassPosition, new Grass(newGrassPosition));
+            }
+        }
     }
 
+    private Vector2d bruteJungleGenerator() {
+        for (int i = jungleSize[0].x; i <= jungleSize[1].x; i++) {
+            for (int j = jungleSize[0].y; j <= jungleSize[1].y; j++) {
+                if (!grassMap.containsKey(new Vector2d(i, j))) {
+                    return new Vector2d(i, j);
+                }
+            }
+        }
+        return new Vector2d(-1, -1);
+    }
+
+    private Vector2d bruteSavannaGenerator() {
+        for (int i = 0; i <= mapSize[1].x; i++) {
+            for (int j = 0; j <= mapSize[1].y; j++) {
+                if(i == jungleSize[0].x)
+                    i += (jungleSize[1].x - jungleSize[0].x + 1);
+                if(j == jungleSize[0].y)
+                    j += (jungleSize[1].y - jungleSize[0].y + 1);
+
+                if (!grassMap.containsKey(new Vector2d(i, j))) {
+                    return new Vector2d(i, j);
+                }
+            }
+        }
+        return new Vector2d(-1, -1);
+    }
 }
