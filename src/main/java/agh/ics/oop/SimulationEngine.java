@@ -43,34 +43,7 @@ public class SimulationEngine implements IEngine, Runnable{
 
     }
 
-    private Vector2d[] findJungleLocation(int xMax, int yMax, int jungleRatio, int savannaRatio){
-        int mapArea = xMax * yMax;
-        int jungleArea = jungleRatio * mapArea / (jungleRatio + savannaRatio), xJungle = 1, yJungle = 1;
-        Vector2d[] expansionOrder = {new Vector2d(0, 1), new Vector2d(1, 0)};
 
-        int expIndex = 0;
-        while (xJungle * yJungle < jungleArea) {
-            xJungle = Math.min(xJungle + expansionOrder[expIndex].x, xMax);
-            yJungle = Math.min(xJungle + expansionOrder[expIndex].y, yMax);
-            expIndex++;
-            expIndex %= 2;
-        }
-        int currentInaccuracy, smallerXInaccuracy, smallerYInaccuracy;
-        currentInaccuracy = Math.abs(jungleArea - (xJungle * yJungle));
-        smallerXInaccuracy = Math.abs(jungleArea - ((xJungle - 1) * yJungle));
-        smallerYInaccuracy = Math.abs(jungleArea - (xJungle * (yJungle - 1)));
-        out.println(currentInaccuracy + " " + smallerXInaccuracy + " " + smallerYInaccuracy);
-        if(currentInaccuracy > smallerXInaccuracy && smallerYInaccuracy >= smallerXInaccuracy){
-            xJungle--;
-        }
-        else if(currentInaccuracy > smallerYInaccuracy){
-            yJungle--;
-        }
-
-        Vector2d bottomLeftCorner = new Vector2d((xMax - xJungle + 1) / 2, (yMax - yJungle + 1) / 2);
-        Vector2d upperRightCorner = new Vector2d((xMax - xJungle + 1) / 2 + xJungle -1 , (yMax - yJungle + 1) / 2 + yJungle -1 );
-        return new Vector2d[]{bottomLeftCorner, upperRightCorner};
-    }
 
     public String toString(){
         return map.toString();

@@ -12,18 +12,16 @@ public class Animal implements IMapElement{
     private final IWorldMap map;
     private final List<IPositionChangeObserver> observersList = new LinkedList<>();
     private final int[] genotype;
-    private int energyLevel;
-    private int moveEnergyCost = 0;
+    private double energyLevel;
 
-    public Animal(IWorldMap map, Vector2d initialPosition, int startEnergy, int moveEnergyValue){
+    public Animal(IWorldMap map, Vector2d initialPosition, double startEnergy, int[] givenGenotype){
         this.map = map;
         addObserver((IPositionChangeObserver) this.map);
 
         this.position = initialPosition;
         this.energyLevel = startEnergy;
-        this.genotype = new Random().ints(32,0,7).toArray();
+        this.genotype = givenGenotype;//new Random().ints(32,0,7).toArray();
         Arrays.sort(this.genotype);
-        this.moveEnergyCost = moveEnergyValue;
         this.orientation = MapDirection.values()[new Random().nextInt(MapDirection.values().length)];
     }
 
@@ -32,19 +30,21 @@ public class Animal implements IMapElement{
         int directionChange = genotype[new Random().nextInt(32)];
         switch (directionChange) {
             case 0 -> {
-                Vector2d tmp = new Vector2d(this.position.x, this.position.y).add(this.orientation.toUnitVector());
-                if(map.canMoveTo(tmp)){
-                    positionChanged(this.position,tmp,this);
+                Vector2d nextPosition = new Vector2d(this.position.x, this.position.y).add(this.orientation.toUnitVector());
+                if(map.canMoveTo(nextPosition)){
+                    if(map instanceof WrappedMap)
+                        nextPosition = ((WrappedMap) map).wrapVector(nextPosition);
+                    positionChanged(this.position,nextPosition,this);
                     this.position = this.position.add(this.orientation.toUnitVector());
-                    //positionChanged(tmp.subtract(this.orientation.toUnitVector()),tmp,this);
                 }
             }
             case 4 -> {
-                Vector2d tmp = new Vector2d(this.position.x, this.position.y).subtract(this.orientation.toUnitVector());
-                if(map.canMoveTo(tmp)){
-                    positionChanged(this.position,tmp,this);
+                Vector2d nextPosition = new Vector2d(this.position.x, this.position.y).subtract(this.orientation.toUnitVector());
+                if(map.canMoveTo(nextPosition)){
+                    if(map instanceof WrappedMap)
+                        nextPosition = ((WrappedMap) map).wrapVector(nextPosition);
+                    positionChanged(this.position,nextPosition,this);
                     this.position = this.position.subtract(this.orientation.toUnitVector());
-                    //positionChanged(tmp.add(this.orientation.toUnitVector()),tmp,this);
                 }
             }
             default -> {
@@ -90,5 +90,13 @@ public class Animal implements IMapElement{
         return new Vector2d(this.position.x,this.position.y);
     }
 
-    public int getEnergy() { return this.energyLevel; }
+    public double getEnergy() { return this.energyLevel; }
+
+    public void energyGain(double energy) {energyLevel += energy;}
+
+    public void energyLoss(double energy) {energyLevel -= energy;}
+
+    public int[] getGenotype(){
+        return this.genotype;
+    }
 }

@@ -28,13 +28,6 @@ public interface IWorldMap{
      */
     void  place(Animal animal);
 
-    /**
-     *
-     * @param child
-     *      newborn to be placed
-     *
-     */
-    void placeChild(Animal child);
 
     /**
      * Return true if given position on the map is occupied. Should not be
