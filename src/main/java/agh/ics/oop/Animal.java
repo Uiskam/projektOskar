@@ -12,9 +12,9 @@ public class Animal implements IMapElement{
     private final IWorldMap map;
     private final List<IPositionChangeObserver> observersList = new LinkedList<>();
     private final int[] genotype;
-    private double energyLevel;
+    private int energyLevel;
 
-    public Animal(IWorldMap map, Vector2d initialPosition, double startEnergy, int[] givenGenotype){
+    public Animal(IWorldMap map, Vector2d initialPosition, int startEnergy, int[] givenGenotype){
         this.map = map;
         addObserver((IPositionChangeObserver) this.map);
 
@@ -26,7 +26,6 @@ public class Animal implements IMapElement{
     }
 
     public void move() {
-        energyLevel -= moveEnergyCost;
         int directionChange = genotype[new Random().nextInt(32)];
         switch (directionChange) {
             case 0 -> {
@@ -90,11 +89,11 @@ public class Animal implements IMapElement{
         return new Vector2d(this.position.x,this.position.y);
     }
 
-    public double getEnergy() { return this.energyLevel; }
+    public int getEnergy() { return this.energyLevel; }
 
-    public void energyGain(double energy) {energyLevel += energy;}
+    public void energyGain(int energy) {energyLevel += energy;}
 
-    public void energyLoss(double energy) {energyLevel -= energy;}
+    public void energyLoss(int energy) {energyLevel -= energy;}
 
     public int[] getGenotype(){
         return this.genotype;

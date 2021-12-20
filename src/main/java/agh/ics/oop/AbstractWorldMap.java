@@ -123,7 +123,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         }
         for (Animal animal : animals) {
             if (animals.first().getEnergy() == animal.getEnergy())
-                animal.energyGain((double) plantEnergy / (double) howManyWillEat);
+                animal.energyGain( plantEnergy / howManyWillEat);
             else
                 break;
         }
@@ -138,16 +138,16 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                     int[] parent0Genotype = parent0.getGenotype(), parent1Genotype = parent1.getGenotype();
                     int genotypeLength = parent0Genotype.length;
                     int[] childGenotype;
-                    int numberOfParent0Genes = (int) (Math.ceil(parent0.getEnergy() / (parent0.getEnergy() + parent1.getEnergy()) * genotypeLength));
+                    int numberOfParent0Genes = parent0.getEnergy() / (parent0.getEnergy() + parent1.getEnergy()) * genotypeLength;
                     int parent0Side = new Random().nextInt(2);
                     if (parent0Side == 0) {
                         childGenotype = writeGenotype(parent0Genotype, parent1Genotype, numberOfParent0Genes);
                     } else {
                         childGenotype = writeGenotype(parent1Genotype, parent0Genotype, 32 - numberOfParent0Genes);
                     }
-                    Animal child = new Animal(this, position, parent0.getEnergy() / 4.0 + parent1.getEnergy() / 4.0, childGenotype);
-                    parent0.energyLoss(parent0.getEnergy() / 4.0);
-                    parent1.energyLoss(parent1.getEnergy() / 4.0);
+                    Animal child = new Animal(this, position, parent0.getEnergy() / 4 + parent1.getEnergy() / 4, childGenotype);
+                    parent0.energyLoss(parent0.getEnergy() / 4);
+                    parent1.energyLoss(parent1.getEnergy() / 4);
                     animalMap.get(position).add(child);
                 }
             }
@@ -168,9 +168,9 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     public void addGrass() {
         Random generator = new Random();
-        int jungleWidth = jungleSize[1].x - jungleSize[0].x;
-        int jungleHeight = jungleSize[1].y - jungleSize[0].y;
-        Grass newGrass = new Grass(new Vector2d(generator.nextInt(jungleWidth) + jungleSize[0].x))
+        int jungleWidth = jungleSize[1].x - jungleSize[0].x + 1;
+        int jungleHeight = jungleSize[1].y - jungleSize[0].y + 1;
+        Grass newGrass = new Grass(new Vector2d(generator.nextInt(jungleWidth) + jungleSize[0].x, generator.nextInt(jungleHeight) + jungleSize[0].y));
     }
 
 }
