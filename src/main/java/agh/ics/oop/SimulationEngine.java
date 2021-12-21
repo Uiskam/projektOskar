@@ -3,6 +3,7 @@ package agh.ics.oop;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import static java.lang.System.out;
 
@@ -16,7 +17,7 @@ public class SimulationEngine implements IEngine, Runnable{
         this.map = givenMap;
         this.moveDelay = stopLength;
         for (Vector2d vector2d : position) {
-            Animal tmp = new Animal(this.map, vector2d,startEnergy,moveEnergyValue);
+            Animal tmp = new Animal(this.map, vector2d,startEnergy, new Random().ints(32,0,7).toArray());
             this.map.place(tmp);
             animals.add(tmp);
         }

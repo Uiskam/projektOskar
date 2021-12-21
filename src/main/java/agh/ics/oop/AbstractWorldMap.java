@@ -13,7 +13,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public AbstractWorldMap(int width, int height, int jungleRatio, int savannaRatio) {//generate grass on the filed
         mapSize[0] = new Vector2d(0, 0);
         mapSize[1] = new Vector2d(width - 1, height - 1);
-        jungleSize = findJungleLocation(mapSize[1].x, mapSize[1].y, jungleRatio, savannaRatio);
+        jungleSize = findJungleLocation(width, height, jungleRatio, savannaRatio);
     }
 
     private Vector2d[] findJungleLocation(int xMax, int yMax, int jungleRatio, int savannaRatio) {
@@ -23,8 +23,9 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
         int expIndex = 0;
         while (xJungle * yJungle < jungleArea) {
+            //out.println(xJungle + " " + yJungle);
             xJungle = Math.min(xJungle + expansionOrder[expIndex].x, xMax);
-            yJungle = Math.min(xJungle + expansionOrder[expIndex].y, yMax);
+            yJungle = Math.min(yJungle + expansionOrder[expIndex].y, yMax);
             expIndex++;
             expIndex %= 2;
         }
@@ -32,7 +33,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         currentInaccuracy = Math.abs(jungleArea - (xJungle * yJungle));
         smallerXInaccuracy = Math.abs(jungleArea - ((xJungle - 1) * yJungle));
         smallerYInaccuracy = Math.abs(jungleArea - (xJungle * (yJungle - 1)));
-        out.println(currentInaccuracy + " " + smallerXInaccuracy + " " + smallerYInaccuracy);
+        //out.println(currentInaccuracy + " " + smallerXInaccuracy + " " + smallerYInaccuracy);
         if (currentInaccuracy > smallerXInaccuracy && smallerYInaccuracy >= smallerXInaccuracy) {
             xJungle--;
         } else if (currentInaccuracy > smallerYInaccuracy) {
@@ -106,25 +107,22 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         for (Vector2d animalPosition : animalMap.keySet()) {
             if (grassMap.containsKey(animalPosition)) {
                 grassMap.remove(animalPosition);
-                grassConsumption(animalPosition, plantEnergy);
-            }
-        }
-    }
 
-    public void grassConsumption(Vector2d position, int plantEnergy) {
-        int howManyWillEat = 0;
-        SortedSet<Animal> animals = animalMap.get(position);
-        for (Animal animal : animals) {
-            if (animals.first().getEnergy() == animal.getEnergy())
-                howManyWillEat++;
-            else
-                break;
-        }
-        for (Animal animal : animals) {
-            if (animals.first().getEnergy() == animal.getEnergy())
-                animal.energyGain(plantEnergy / howManyWillEat);
-            else
-                break;
+                int howManyWillEat = 0;
+                SortedSet<Animal> animals = animalMap.get(animalPosition);
+                for (Animal animal : animals) {
+                    if (animals.first().getEnergy() == animal.getEnergy())
+                        howManyWillEat++;
+                    else
+                        break;
+                }
+                for (Animal animal : animals) {
+                    if (animals.first().getEnergy() == animal.getEnergy())
+                        animal.energyGain(plantEnergy / howManyWillEat);
+                    else
+                        break;
+                }
+            }
         }
     }
 
@@ -184,22 +182,21 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                 grassMap.put(newGrassPosition, new Grass(newGrassPosition));
         }
 
+        newGrassPosition = new Vector2d(-1, -1);
         for (int i = 0; i < 100; i++) {
-            int newX = generator.nextInt(mapSize[1].x + 1 - (jungleSize[1].x - jungleSize[0].x + 1));
-            int newY = generator.nextInt(mapSize[1].y + 1 - (jungleSize[1].y - jungleSize[0].y + 1));
-
-            if (jungleSize[0].x <= newX && newX <= jungleSize[1].x)
-                newX += (jungleSize[1].x - jungleSize[0].x + 1);
-            if (jungleSize[0].y <= newY && newY <= jungleSize[1].y)
-                newY += (jungleSize[1].y - jungleSize[0].y + 1);
-
-            newGrassPosition = new Vector2d(newX, newY);
+            newGrassPosition = new Vector2d(generator.nextInt(mapSize[1].x + 1), generator.nextInt(mapSize[1].y + 1));
+            if (newGrassPosition.follows(jungleSize[0]) && newGrassPosition.precedes(jungleSize[1])) {
+                continue;
+            }
             if (!grassMap.containsKey(newGrassPosition))
+                break;
+        }
+        if (!grassMap.containsKey(newGrassPosition) && !(newGrassPosition.follows(jungleSize[0]) && newGrassPosition.precedes(jungleSize[1]))) {
+            grassMap.put(newGrassPosition, new Grass(newGrassPosition));
+        } else {
+            newGrassPosition = bruteSavannaGenerator();
+            if (!newGrassPosition.equals(new Vector2d(-1, -1))) {
                 grassMap.put(newGrassPosition, new Grass(newGrassPosition));
-            else{
-                newGrassPosition = bruteSavannaGenerator();
-                if(!newGrassPosition.equals(new Vector2d(-1,-1)))
-                    grassMap.put(newGrassPosition, new Grass(newGrassPosition));
             }
         }
     }
@@ -216,15 +213,19 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     }
 
     private Vector2d bruteSavannaGenerator() {
+        //out.println(mapSize[1].x + " " + mapSize[1].y);
         for (int i = 0; i <= mapSize[1].x; i++) {
             for (int j = 0; j <= mapSize[1].y; j++) {
-                if(i == jungleSize[0].x)
-                    i += (jungleSize[1].x - jungleSize[0].x + 1);
-                if(j == jungleSize[0].y)
-                    j += (jungleSize[1].y - jungleSize[0].y + 1);
-
-                if (!grassMap.containsKey(new Vector2d(i, j))) {
-                    return new Vector2d(i, j);
+                Vector2d tmpVector = new Vector2d(i, j);
+                if (tmpVector.follows(jungleSize[0]) && tmpVector.precedes(jungleSize[1])) {
+                    continue;
+                }
+                /*if(jungleSize[0].x <= i && i <= jungleSize[1].x && jungleSize[0].y <= j && j <= jungleSize[1].y) {
+                        j += (jungleSize[1].y - jungleSize[0].y + 1);
+                    }
+                }*/
+                if (!grassMap.containsKey(tmpVector)) {
+                    return tmpVector;
                 }
             }
         }
