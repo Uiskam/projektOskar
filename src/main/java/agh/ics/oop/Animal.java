@@ -34,7 +34,8 @@ public class Animal implements IMapElement{
                     if(map instanceof WrappedMap)
                         nextPosition = ((WrappedMap) map).wrapVector(nextPosition);
                     positionChanged(this.position,nextPosition,this);
-                    this.position = this.position.add(this.orientation.toUnitVector());
+                    this.position = nextPosition;//toIniteVector nie bierze pod uwagę zawijania koordynantó
+                    //przez co pozycja zwierzęcie była ustawiona poza mpaą
                 }
             }
             case 4 -> {
@@ -43,7 +44,7 @@ public class Animal implements IMapElement{
                     if(map instanceof WrappedMap)
                         nextPosition = ((WrappedMap) map).wrapVector(nextPosition);
                     positionChanged(this.position,nextPosition,this);
-                    this.position = this.position.subtract(this.orientation.toUnitVector());
+                    this.position = nextPosition;
                 }
             }
             default -> {

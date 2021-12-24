@@ -108,6 +108,10 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     @Override
     public void positionChanged(Vector2d oldPosition, Vector2d newPosition, Animal animal) throws IllegalArgumentException {
+        out.println(oldPosition + " " + newPosition);
+        if(animalMap.get(oldPosition) == null){
+            throw new NullPointerException(oldPosition + "is non existant");
+        }
         out.println("SADASD " + animalMap.get(oldPosition));
         //List<Animal> tmp = animalMap.get(oldPosition);
         //tmp.remove(animal);
