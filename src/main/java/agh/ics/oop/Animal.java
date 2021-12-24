@@ -25,8 +25,8 @@ public class Animal implements IMapElement{
         this.orientation = MapDirection.values()[new Random().nextInt(MapDirection.values().length)];
     }
 
-    public void move() {
-        int directionChange = genotype[new Random().nextInt(32)];
+    public void move(int directionChange) {
+        //int directionChange = genotype[new Random().nextInt(32)];
         switch (directionChange) {
             case 0 -> {
                 Vector2d nextPosition = new Vector2d(this.position.x, this.position.y).add(this.orientation.toUnitVector());

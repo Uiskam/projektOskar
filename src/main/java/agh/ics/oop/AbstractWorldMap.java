@@ -51,7 +51,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         if (!animal.getPosition().follows(mapSize[0]) || !animal.getPosition().precedes(mapSize[1]))
             throw new IllegalArgumentException(animal.getPosition() + " is outside the map");
         if (!animalMap.containsKey(animal.getPosition())) {
-            animalMap.put(animal.getPosition(), new LinkedList<Animal>());
+            animalMap.put(animal.getPosition(), new LinkedList<>());
             animalMap.get(animal.getPosition()).add(animal);
             return;
         }
@@ -107,10 +107,15 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     }
 
     @Override
-    public void positionChanged(Vector2d oldPosition, Vector2d newPosition, Animal animal) {
+    public void positionChanged(Vector2d oldPosition, Vector2d newPosition, Animal animal) throws IllegalArgumentException {
+        out.println("SADASD " + animalMap.get(oldPosition));
+        //List<Animal> tmp = animalMap.get(oldPosition);
+        //tmp.remove(animal);
         animalMap.get(oldPosition).remove(animal);
-        if (animalMap.get(oldPosition).isEmpty())
+        //out.println(animalMap.get(oldPosition).get(0));
+        if (animalMap.get(oldPosition).isEmpty()) {
             animalMap.remove(oldPosition);
+        }
         if (!animalMap.containsKey(newPosition))
             animalMap.put(newPosition, new LinkedList<>());
         animalMap.get(newPosition).add(animal);
@@ -249,4 +254,9 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         }
         return new Vector2d(-1, -1);
     }
+
+    public Vector2d[] getJungleSize(){
+        return jungleSize;
+    }
 }
+
