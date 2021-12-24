@@ -112,7 +112,7 @@ public class GrassGenerationTest {
 
     }
 
-    @Test//test with bigger jungle than savanna
+    @Test
     public void randGrassGenTest(){
         Random rand = new Random();
         int width = rand.nextInt(200) + 1, height = rand.nextInt(200) + 1, jungleRatio = rand.nextInt(200) + 1, savannaRatio = rand.nextInt(200) + 1;

@@ -5,7 +5,7 @@ import java.util.*;
 import static java.lang.System.out;
 
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver {
-    final protected Map<Vector2d, SortedSet<Animal>> animalMap = new LinkedHashMap<>();
+    final protected Map<Vector2d, LinkedList<Animal>> animalMap = new LinkedHashMap<>();
     final protected Map<Vector2d, Grass> grassMap = new LinkedHashMap<>();
     protected final Vector2d[] mapSize = {new Vector2d(0, 0), new Vector2d(0, 0)};
     protected final Vector2d[] jungleSize;
@@ -51,7 +51,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         if (!animal.getPosition().follows(mapSize[0]) || !animal.getPosition().precedes(mapSize[1]))
             throw new IllegalArgumentException(animal.getPosition() + " is outside the map");
         if (!animalMap.containsKey(animal.getPosition())) {
-            animalMap.put(animal.getPosition(), new TreeSet<>(new EnergyComparator()));
+            animalMap.put(animal.getPosition(), new LinkedList<Animal>());
             animalMap.get(animal.getPosition()).add(animal);
             return;
         }
@@ -62,9 +62,22 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         return animalMap.containsKey(position) || grassMap.containsKey(position);
     }
 
+
+    private Animal getAnimalWithMaxEnergy(Vector2d position){
+        if(!animalMap.containsKey(position) || animalMap.get(position).size() == 0)
+            throw new IllegalArgumentException("Position without animals was given");
+        Animal animalFound = animalMap.get(position).get(0);
+        for(Animal animal : animalMap.get(position)){
+            if(animal.getEnergy() > animalFound.getEnergy()) {
+                animalFound = animal;
+            }
+        }
+        return animalFound;
+    }
+
     public Object objectAt(Vector2d position) {
         if (animalMap.containsKey(position)) {
-            return animalMap.get(position).first();
+            return getAnimalWithMaxEnergy(position);
         }
         if (grassMap.containsKey(position)) {
             return grassMap.get(position);
@@ -89,7 +102,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     public HashMap<Vector2d, IMapElement> getObjects() {
         HashMap<Vector2d, IMapElement> objects = new HashMap<>(this.grassMap);
-        animalMap.values().forEach(animalSet -> objects.put(animalSet.first().getPosition(), animalSet.first()));
+        animalMap.keySet().forEach(animalPosition -> objects.put(animalPosition, getAnimalWithMaxEnergy(animalPosition)));
         return objects;
     }
 
@@ -99,7 +112,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         if (animalMap.get(oldPosition).isEmpty())
             animalMap.remove(oldPosition);
         if (!animalMap.containsKey(newPosition))
-            animalMap.put(newPosition, new TreeSet<>(new EnergyComparator()));
+            animalMap.put(newPosition, new LinkedList<>());
         animalMap.get(newPosition).add(animal);
     }
 
@@ -109,15 +122,15 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                 grassMap.remove(animalPosition);
 
                 int howManyWillEat = 0;
-                SortedSet<Animal> animals = animalMap.get(animalPosition);
-                for (Animal animal : animals) {
-                    if (animals.first().getEnergy() == animal.getEnergy())
+                Animal mostEnergeticAnimal = getAnimalWithMaxEnergy(animalPosition);
+                for (Animal animal : animalMap.get(animalPosition)) {
+                    if (mostEnergeticAnimal.getEnergy() == animal.getEnergy())
                         howManyWillEat++;
                     else
                         break;
                 }
-                for (Animal animal : animals) {
-                    if (animals.first().getEnergy() == animal.getEnergy())
+                for (Animal animal : animalMap.get(animalPosition)) {
+                    if (mostEnergeticAnimal.getEnergy() == animal.getEnergy())
                         animal.energyGain(plantEnergy / howManyWillEat);
                     else
                         break;
@@ -129,8 +142,13 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public void animalReproduction(int startEnergy) {
         for (Vector2d position : animalMap.keySet()) {
             if (animalMap.get(position).size() >= 2) {
-                Iterator<Animal> animalIterator = animalMap.get(position).iterator();
-                Animal parent0 = animalIterator.next(), parent1 = animalIterator.next();
+                //Iterator<Animal> animalIterator = animalMap.get(position).iterator();
+                Animal parent0 = getAnimalWithMaxEnergy(position);
+                Animal parent1 = new Animal(this,new Vector2d(0,0),-1,new Random().ints(32,0,7).toArray());
+                for(Animal potentialParent : animalMap.get(position)){
+                    if(potentialParent.getEnergy() > parent1.getEnergy() && potentialParent != parent0)
+                        parent1 = potentialParent;
+                }
                 if (parent0.getEnergy() >= startEnergy / 2.0 && parent1.getEnergy() >= startEnergy / 2.0) {
                     int[] parent0Genotype = parent0.getGenotype(), parent1Genotype = parent1.getGenotype();
                     int genotypeLength = parent0Genotype.length;
