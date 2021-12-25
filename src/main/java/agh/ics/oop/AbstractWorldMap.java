@@ -151,25 +151,29 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public void animalReproduction(int startEnergy) {
         for (Vector2d position : animalMap.keySet()) {
             if (animalMap.get(position).size() >= 2) {
+
                 //Iterator<Animal> animalIterator = animalMap.get(position).iterator();
                 Animal parent0 = getAnimalWithMaxEnergy(position);
-                Animal parent1 = new Animal(this,new Vector2d(0,0),-1,new Random().ints(32,0,7).toArray());
+                Animal parent1 = new Animal(this,new Vector2d(0,0),-1,
+                        new Random().ints(32,0,7).toArray(), 0);
                 for(Animal potentialParent : animalMap.get(position)){
-                    if(potentialParent.getEnergy() > parent1.getEnergy() && potentialParent != parent0)
+                    if(potentialParent.getEnergy() > parent1.getEnergy() && potentialParent != parent0) {
                         parent1 = potentialParent;
+                    }
                 }
                 if (parent0.getEnergy() >= startEnergy / 2.0 && parent1.getEnergy() >= startEnergy / 2.0) {
                     int[] parent0Genotype = parent0.getGenotype(), parent1Genotype = parent1.getGenotype();
                     int genotypeLength = parent0Genotype.length;
-                    int[] childGenotype;
-                    int numberOfParent0Genes = parent0.getEnergy() / (parent0.getEnergy() + parent1.getEnergy()) * genotypeLength;
+                    int[] childGenotype = new int[32];
+                    int numberOfParent0Genes = (int)((double)parent0.getEnergy() /
+                            (double)(parent0.getEnergy() + parent1.getEnergy()) * genotypeLength);
                     int parent0Side = new Random().nextInt(2);
                     if (parent0Side == 0) {
                         childGenotype = writeGenotype(parent0Genotype, parent1Genotype, numberOfParent0Genes);
                     } else {
                         childGenotype = writeGenotype(parent1Genotype, parent0Genotype, 32 - numberOfParent0Genes);
                     }
-                    Animal child = new Animal(this, position, parent0.getEnergy() / 4 + parent1.getEnergy() / 4, childGenotype);
+                    Animal child = new Animal(this, position, parent0.getEnergy() / 4 + parent1.getEnergy() / 4, childGenotype,0);
                     parent0.energyLoss(parent0.getEnergy() / 4);
                     parent1.energyLoss(parent1.getEnergy() / 4);
                     animalMap.get(position).add(child);

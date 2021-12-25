@@ -17,7 +17,7 @@ public class SimulationEngine implements IEngine, Runnable{
         this.map = givenMap;
         this.moveDelay = stopLength;
         for (Vector2d vector2d : position) {
-            Animal tmp = new Animal(this.map, vector2d,startEnergy, new Random().ints(32,0,7).toArray());
+            Animal tmp = new Animal(this.map, vector2d,startEnergy, new Random().ints(32,0,7).toArray(),0);
             this.map.place(tmp);
             animals.add(tmp);
         }

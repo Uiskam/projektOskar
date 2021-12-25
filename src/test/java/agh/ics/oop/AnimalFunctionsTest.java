@@ -19,7 +19,7 @@ public class AnimalFunctionsTest {
     @Test
     public void animalPlacementAndPositionChangeTest() {
         RectangularMap map = new RectangularMap(10, 10, 1, 1);
-        Animal testAnimal = new Animal(map, new Vector2d(5, 5), 10, new Random().ints(32, 0, 7).toArray());
+        Animal testAnimal = new Animal(map, new Vector2d(5, 5), 10, new Random().ints(32, 0, 7).toArray(),0);
         map.place(testAnimal);
         HashMap<Vector2d, IMapElement> objects = map.getObjects();
         assertEquals(testAnimal, objects.get(testAnimal.getPosition()));
@@ -28,7 +28,7 @@ public class AnimalFunctionsTest {
     @Test
     public void animalRotationTest() {
         RectangularMap map = new RectangularMap(10, 10, 1, 1);
-        Animal testAnimal = new Animal(map, new Vector2d(5, 5), 1, new Random().ints(32, 0, 7).toArray());
+        Animal testAnimal = new Animal(map, new Vector2d(5, 5), 1, new Random().ints(32, 0, 7).toArray(),0);
         MapDirection[] correctDirections = {MapDirection.NORTH_EAST, MapDirection.SOUTH_EAST, MapDirection.WEST,
                 MapDirection.SOUTH_EAST, MapDirection.NORTH_EAST, MapDirection.NORTH};
         changeDirectionTo(MapDirection.NORTH, testAnimal);
@@ -44,7 +44,7 @@ public class AnimalFunctionsTest {
     @Test
     public void animalMovementTest0() {
         WrappedMap map = new WrappedMap(10, 10, 1, 8);
-        Animal testAnimal = new Animal(map, new Vector2d(5, 5), 1, new Random().ints(32, 0, 7).toArray());
+        Animal testAnimal = new Animal(map, new Vector2d(5, 5), 1, new Random().ints(32, 0, 7).toArray(),0);
         map.place(testAnimal);
 
         changeDirectionTo(MapDirection.NORTH, testAnimal);
@@ -106,7 +106,7 @@ public class AnimalFunctionsTest {
     @Test
     public void eatingTest() {
         WrappedMap map = new WrappedMap(10, 10, 1, 8);
-        Animal testAnimal = new Animal(map, new Vector2d(5, 5), 1, new Random().ints(32, 0, 7).toArray());
+        Animal testAnimal = new Animal(map, new Vector2d(5, 5), 1, new Random().ints(32, 0, 7).toArray(),0);
         map.place(testAnimal);
         map.addGrass();
         HashMap<Vector2d, IMapElement> objects = map.getObjects();
@@ -142,6 +142,12 @@ public class AnimalFunctionsTest {
         assertNull(objects.get(grasPosition));
     }
 
+    private void wypTab(int[] noName){
+        for(int i = 0; i < noName.length; i++){
+            System.out.print(noName[i] + " ");
+        }
+        System.out.println();
+    }
     @Test
     public void reproductionTest() {
         RectangularMap map = new RectangularMap(10, 10, 1, 1);
@@ -149,26 +155,51 @@ public class AnimalFunctionsTest {
         for (int i = 0; i < 32; i++) {
             genotype[i] = 0;
         }
-        Animal testAnimal0 = new Animal(map, new Vector2d(5, 5), 10, genotype);
+        Animal testAnimal0 = new Animal(map, new Vector2d(5, 5), 10, genotype.clone(),0);
         for(int i = 0; i < 32; i++){
             genotype[i] = 3;
         }
-        Animal testAnimal1 = new Animal(map, new Vector2d(5, 6), 10, genotype);
+        Animal testAnimal1 = new Animal(map, new Vector2d(4, 5), 10, genotype.clone(),0);
         map.place(testAnimal0);
         map.place(testAnimal1);
+        //System.out.println(new MapVisualizer(map).draw(map.getMapSize()[0],map.getMapSize()[1]));
         changeDirectionTo(MapDirection.EAST, testAnimal1);
         testAnimal1.move(0);
         map.animalReproduction(10);
         testAnimal0.move(0);
         testAnimal1.move(0);
         HashMap<Vector2d, IMapElement> objects = map.getObjects();
+        //System.out.println(new MapVisualizer(map).draw(map.getMapSize()[0],map.getMapSize()[1]));
+        //System.out.println("map size :" + objects.size());
         if(objects.containsKey(new Vector2d(5,5))){
             Animal child = (Animal) objects.get(new Vector2d(5, 5));
+            /*wypTab(testAnimal0.getGenotype());System.out.println("Here");
+            wypTab(testAnimal1.getGenotype());System.out.println("Here");*/
+            wypTab(child.getGenotype());System.out.println("Here");
+            assertEquals(testAnimal0.getEnergy()/4 + testAnimal1.getEnergy()/4,
+                    child.getEnergy(),"child has wrong energy level");
+            for(int i = 0; i < 32; i++){
+                if(i < 16) {
+                    genotype[i] = 0;
+                }
+                else
+                    genotype[i] = 1;
+            }
+
         }
         else{
-            System.out.println("fdwsfdsgfdsagfdslkhbgfdslk");
-            ;//assertEquals(1,0);
+            assertEquals(1,0,"child not found");
         }
 
+    }
+
+    private boolean genotypeCmp(int[] genotype0, int[] genotype1){
+        if(genotype0.length != genotype1.length)
+            return false;
+        for(int i = 0 ; i < genotype0.length; i++){
+            if(genotype0[i] != genotype1[i])
+                return false;
+        }
+        return true;
     }
 }

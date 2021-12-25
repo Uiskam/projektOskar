@@ -13,11 +13,11 @@ public class Animal implements IMapElement{
     private final List<IPositionChangeObserver> observersList = new LinkedList<>();
     private final int[] genotype;
     private int energyLevel;
-
-    public Animal(IWorldMap map, Vector2d initialPosition, int startEnergy, int[] givenGenotype){
+    private final int moveEnergyCost;
+    public Animal(IWorldMap map, Vector2d initialPosition, int startEnergy, int[] givenGenotype, int moveEnergyCostInput){
         this.map = map;
         addObserver((IPositionChangeObserver) this.map);
-
+        this.moveEnergyCost = moveEnergyCostInput;
         this.position = initialPosition;
         this.energyLevel = startEnergy;
         this.genotype = givenGenotype;//new Random().ints(32,0,7).toArray();
@@ -26,6 +26,7 @@ public class Animal implements IMapElement{
     }
 
     public void move(int directionChange) {
+        this.energyLoss(moveEnergyCost);
         //int directionChange = genotype[new Random().nextInt(32)];
         switch (directionChange) {
             case 0 -> {
@@ -34,8 +35,8 @@ public class Animal implements IMapElement{
                     if(map instanceof WrappedMap)
                         nextPosition = ((WrappedMap) map).wrapVector(nextPosition);
                     positionChanged(this.position,nextPosition,this);
-                    this.position = nextPosition;//toIniteVector nie bierze pod uwagę zawijania koordynantó
-                    //przez co pozycja zwierzęcie była ustawiona poza mpaą
+                    this.position = nextPosition;
+
                 }
             }
             case 4 -> {
