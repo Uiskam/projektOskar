@@ -125,7 +125,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         animalMap.get(newPosition).add(animal);
     }
 
-    public void removeEatenGrass(int plantEnergy) {
+    public void eatGrass(int plantEnergy) {
         for (Vector2d animalPosition : animalMap.keySet()) {
             if (grassMap.containsKey(animalPosition)) {
                 grassMap.remove(animalPosition);
