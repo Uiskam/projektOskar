@@ -165,8 +165,8 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                     int[] parent0Genotype = parent0.getGenotype(), parent1Genotype = parent1.getGenotype();
                     int genotypeLength = parent0Genotype.length;
                     int[] childGenotype = new int[32];
-                    int numberOfParent0Genes = (int)((double)parent0.getEnergy() /
-                            (double)(parent0.getEnergy() + parent1.getEnergy()) * genotypeLength);
+                    int numberOfParent0Genes = parent0.getEnergy() * genotypeLength /
+                            (parent0.getEnergy() + parent1.getEnergy());
                     int parent0Side = new Random().nextInt(2);
                     if (parent0Side == 0) {
                         childGenotype = writeGenotype(parent0Genotype, parent1Genotype, numberOfParent0Genes);

@@ -162,28 +162,21 @@ public class AnimalFunctionsTest {
         Animal testAnimal1 = new Animal(map, new Vector2d(4, 5), 10, genotype.clone(),0);
         map.place(testAnimal0);
         map.place(testAnimal1);
-        //System.out.println(new MapVisualizer(map).draw(map.getMapSize()[0],map.getMapSize()[1]));
         changeDirectionTo(MapDirection.EAST, testAnimal1);
         testAnimal1.move(0);
         map.animalReproduction(10);
         testAnimal0.move(0);
         testAnimal1.move(0);
         HashMap<Vector2d, IMapElement> objects = map.getObjects();
-        //System.out.println(new MapVisualizer(map).draw(map.getMapSize()[0],map.getMapSize()[1]));
-        //System.out.println("map size :" + objects.size());
         if(objects.containsKey(new Vector2d(5,5))){
             Animal child = (Animal) objects.get(new Vector2d(5, 5));
-            /*wypTab(testAnimal0.getGenotype());System.out.println("Here");
-            wypTab(testAnimal1.getGenotype());System.out.println("Here");*/
-            wypTab(child.getGenotype());System.out.println("Here");
             assertEquals(testAnimal0.getEnergy()/4 + testAnimal1.getEnergy()/4,
                     child.getEnergy(),"child has wrong energy level");
             for(int i = 0; i < 32; i++){
-                if(i < 16) {
-                    genotype[i] = 0;
-                }
+                if( i < 16)
+                    assertEquals(0,child.getGenotype()[i],"genotype error");
                 else
-                    genotype[i] = 1;
+                    assertEquals(3,child.getGenotype()[i],"genotype error");
             }
 
         }
