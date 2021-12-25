@@ -13,11 +13,12 @@ public class World {
         WrappedMap map = new WrappedMap(3,3,1,8);
         Animal testAnimal = new Animal(map,new Vector2d(1,1),1,new Random().ints(32,0,7).toArray());
         map.place(testAnimal);
-        for(int i = 0; i < 10; i++) {
-            System.out.println(new MapVisualizer(map).draw(map.getMapSize()[0], map.getMapSize()[1]));
-            testAnimal.move(0);
+        testAnimal.energyLoss(2);
+        //assertEquals(1,map.getObjects().size(),"animal placement error");
+        map.removeDeadAnimals();
+        System.out.println(map.getObjects().size() + " here");
+        out.println(map.getObjects().size() == 0);
 
-        }
 
 
         /*try {
