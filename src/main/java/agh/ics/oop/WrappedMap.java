@@ -6,8 +6,8 @@ import static java.lang.Math.sqrt;
 
 public class WrappedMap extends AbstractWorldMap implements IWorldMap{
 
-    public WrappedMap(int width, int height, int jungleRatio, int savannaRatio) {
-        super(width, height, jungleRatio, savannaRatio);
+    public WrappedMap(int width, int height, double jungleRatio) {
+        super(width, height, jungleRatio);
     }
 
     public Vector2d wrapVector(Vector2d position){

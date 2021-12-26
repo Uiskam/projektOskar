@@ -15,7 +15,7 @@ public class RectangularMapTest {
 
     @Test
     public void rectMapTest0(){
-        RectangularMap map = new RectangularMap(3,3,1,8);
+        RectangularMap map = new RectangularMap(3,3,1/8);
         Animal testAnimal = new Animal(map,new Vector2d(1,1),1,
                 new Random().ints(32,0,7).toArray(),0);
         Vector2d[] correctPositionForward = {new Vector2d(1,2), new Vector2d(1,2), new Vector2d(1,2), new Vector2d(1,2), new Vector2d(1,2)};
@@ -31,7 +31,7 @@ public class RectangularMapTest {
 
     @Test
     public void rectMapTest1(){
-        RectangularMap map = new RectangularMap(3,3,1,8);
+        RectangularMap map = new RectangularMap(3,3,1/8);
         Animal testAnimal = new Animal(map,new Vector2d(1,1),1,
                 new Random().ints(32,0,7).toArray(),0);
         Vector2d[] correctPositionForward = {new Vector2d(1,0), new Vector2d(1,0), new Vector2d(1,0), new Vector2d(1,0), new Vector2d(1,0)};
@@ -47,7 +47,7 @@ public class RectangularMapTest {
 
     @Test
     public void rectMapTest2(){
-        RectangularMap map = new RectangularMap(3,3,1,8);
+        RectangularMap map = new RectangularMap(3,3,1.0/8.0);
         Animal testAnimal = new Animal(map,new Vector2d(1,1),1,
                 new Random().ints(32,0,7).toArray(),0);
         Vector2d[] correctPositionForward = {new Vector2d(0,1), new Vector2d(0,1), new Vector2d(0,1), new Vector2d(0,1), new Vector2d(0,1)};
@@ -63,7 +63,7 @@ public class RectangularMapTest {
 
     @Test
     public void rectMapTest3(){
-        RectangularMap map = new RectangularMap(3,3,1,8);
+        RectangularMap map = new RectangularMap(3,3,1.0/8/0);
         Animal testAnimal = new Animal(map,new Vector2d(1,1),1,
                 new Random().ints(32,0,7).toArray(),0);
         Vector2d[] correctPositionForward = {new Vector2d(2,1), new Vector2d(2,1), new Vector2d(2,1), new Vector2d(2,1), new Vector2d(2,1)};

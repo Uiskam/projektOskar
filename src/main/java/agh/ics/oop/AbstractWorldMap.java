@@ -10,18 +10,22 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     protected final Vector2d[] mapSize = {new Vector2d(0, 0), new Vector2d(0, 0)};
     protected final Vector2d[] jungleSize;
 
-    public AbstractWorldMap(int width, int height, int jungleRatio, int savannaRatio) {//generate grass on the filed
+    public AbstractWorldMap(int width, int height, double jungleRatio) {//generate grass on the filed
         mapSize[0] = new Vector2d(0, 0);
         mapSize[1] = new Vector2d(width - 1, height - 1);
-        jungleSize = findJungleLocation(width, height, jungleRatio, savannaRatio);
+        jungleSize = findJungleLocation(width, height, jungleRatio);
     }
 
-    private Vector2d[] findJungleLocation(int xMax, int yMax, int jungleRatio, int savannaRatio) {
-        int mapArea = xMax * yMax;
-        int jungleArea = jungleRatio * mapArea / (jungleRatio + savannaRatio), xJungle = 1, yJungle = 1;
+    private Vector2d[] findJungleLocation(int xMax, int yMax, double jungleRatio) {
+        long mapArea = (long)((long) xMax * (long)yMax);
+        int jungleArea = (int)((jungleRatio * mapArea) /(1.0 + jungleRatio));
+        double doubleArea = ((jungleRatio * (double)mapArea) /(1.0 + jungleRatio));
+        //out.println("jungle area " + jungleArea + " " + doubleArea + " " + mapArea + " " + jungleRatio);
+        int xJungle = 1, yJungle = 1;
         Vector2d[] expansionOrder = {new Vector2d(0, 1), new Vector2d(1, 0)};
 
         int expIndex = 0;
+        //out.println("requierd area " + jungleArea);
         while (xJungle * yJungle < jungleArea) {
             //out.println(xJungle + " " + yJungle);
             xJungle = Math.min(xJungle + expansionOrder[expIndex].x, xMax);
@@ -29,17 +33,16 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
             expIndex++;
             expIndex %= 2;
         }
+        //out.println("raw params " + xJungle + " " + yJungle);
         int currentInaccuracy, smallerXInaccuracy, smallerYInaccuracy;
         currentInaccuracy = Math.abs(jungleArea - (xJungle * yJungle));
-        smallerXInaccuracy = Math.abs(jungleArea - ((xJungle - 1) * yJungle));
-        smallerYInaccuracy = Math.abs(jungleArea - (xJungle * (yJungle - 1)));
-        //out.println(currentInaccuracy + " " + smallerXInaccuracy + " " + smallerYInaccuracy);
+        smallerXInaccuracy = Math.abs(jungleArea - (Math.max(xJungle - 1,1) * yJungle));
+        smallerYInaccuracy = Math.abs(jungleArea - (xJungle * Math.max(yJungle - 1,1)));
         if (currentInaccuracy > smallerXInaccuracy && smallerYInaccuracy >= smallerXInaccuracy) {
             xJungle--;
         } else if (currentInaccuracy > smallerYInaccuracy) {
             yJungle--;
         }
-
         Vector2d bottomLeftCorner = new Vector2d((xMax - xJungle + 1) / 2, (yMax - yJungle + 1) / 2);
         Vector2d upperRightCorner = new Vector2d((xMax - xJungle + 1) / 2 + xJungle - 1, (yMax - yJungle + 1) / 2 + yJungle - 1);
         return new Vector2d[]{bottomLeftCorner, upperRightCorner};

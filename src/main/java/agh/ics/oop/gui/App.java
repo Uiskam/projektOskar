@@ -44,7 +44,7 @@ public class App extends Application implements IAnimalMoved{
         //String[] test_sq = getParameters().getRaw().toArray(new String[0]);
         //MoveDirection[] directions = OptionsParser.parse(test_sq);
 
-        this.map = new WrappedMap(10,10,1,2);
+        this.map = new WrappedMap(10,10,0.5);
         Vector2d[] positions = {new Vector2d(2, 2), new Vector2d(3, 4)};
         SimulationEngine engine = new SimulationEngine(map, positions,300,10,10);
         engine.addObserver(this);
