@@ -29,7 +29,8 @@ public class App extends Application implements IAnimalMoved{
     public void start(Stage primaryStage){
 
         //primaryStage.show();
-        createGrid();
+        new GridUpdate(gridPane,map).run();
+        //createGrid();
         Scene scene = new Scene(this.hBox, 800, 800);
 
         gridPane.setGridLinesVisible(true);
@@ -40,14 +41,10 @@ public class App extends Application implements IAnimalMoved{
 
     @Override
     public void init() throws IllegalArgumentException{
-        //String[] test_sq  = {"f", "b", "r", "l", "f", "f", "r", "r", "f", "f", "f", "f", "f", "f", "f", "f"};
-        //String[] test_sq = getParameters().getRaw().toArray(new String[0]);
-        //MoveDirection[] directions = OptionsParser.parse(test_sq);
-
         this.map = new WrappedMap(10,10,0.5);
         Vector2d[] positions = {new Vector2d(2, 2), new Vector2d(3, 4)};
-        SimulationEngine engine = new SimulationEngine(map, positions,300,10,10);
-        engine.addObserver(this);
+        SimulationEngine engine = new SimulationEngine(map, positions,300,10,10,
+                this);
 
         Button startButton = new Button("START");
         TextField inputFiled = new TextField();
@@ -66,27 +63,32 @@ public class App extends Application implements IAnimalMoved{
                     }catch (IllegalArgumentException ex){
                         out.println(ex.getMessage());
                     }
-                    createGrid();
+                    new GridUpdate(gridPane,map).run();
+                    //createGrid();
                     gridPane.setGridLinesVisible(true);
                     engineThread = new Thread(engine);
                     engineThread.start();
 
                 }
             });
-
-
     }
-
-
-
 
     @Override
     public void animalMoved() {
         //out.println("sadsafdiuygsafuyeragfuyeraUYBIUYTIUTV");
-        Platform.runLater(this::createGrid);
+        Platform.runLater(new GridUpdate(this.gridPane, this.map)::run);
     }
 
-    private void createGrid(){
+}
+class GridUpdate implements Runnable{
+    private final GridPane gridPane;
+    private final AbstractWorldMap map;
+    public GridUpdate(GridPane givenGridPane, AbstractWorldMap givenMap){
+        this.gridPane = givenGridPane;
+        this.map = givenMap;
+    }
+    @Override
+    public void run(){
         gridPane.setGridLinesVisible(false);
         gridPane.getColumnConstraints().clear();
         gridPane.getRowConstraints().clear();
@@ -124,7 +126,5 @@ public class App extends Application implements IAnimalMoved{
             gridPane.add(animalVisualisation.getVbox(),mapObjects.get(cur).getPosition().x - mapSize[0].x + 1, mapObjects.get(cur).getPosition().y - mapSize[0].y + 1);
             GridPane.setHalignment(label, HPos.CENTER);
         }
-
-
     }
 }

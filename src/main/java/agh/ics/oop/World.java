@@ -10,17 +10,13 @@ import static java.lang.System.*;
 
 public class World {
     public static void main(String[] args) {
-
-
-
-
-        /*try {
+        try {
             out.println("system wystartował");
             Application.launch(App.class, args);
             out.println("system zakończył działanie");
         } catch (IllegalArgumentException ex) {
             out.println(ex.getMessage() + " hejo");
-        }*/
+        }
 
     }
 }

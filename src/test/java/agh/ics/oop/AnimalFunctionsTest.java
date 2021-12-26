@@ -143,8 +143,8 @@ public class AnimalFunctionsTest {
     }
 
     private void wypTab(int[] noName){
-        for(int i = 0; i < noName.length; i++){
-            System.out.print(noName[i] + " ");
+        for (int j : noName) {
+            System.out.print(j + " ");
         }
         System.out.println();
     }

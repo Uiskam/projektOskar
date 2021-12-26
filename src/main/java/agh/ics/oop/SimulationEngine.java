@@ -1,5 +1,7 @@
 package agh.ics.oop;
 
+import agh.ics.oop.gui.App;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +15,8 @@ public class SimulationEngine implements IEngine, Runnable{
     private final IWorldMap map;
     private final LinkedList<IAnimalMoved> observersList = new LinkedList<>();
     private int moveDelay = 0;
-    public SimulationEngine(IWorldMap givenMap, Vector2d[] position,int stopLength, int startEnergy, int moveEnergyValue){
+    public SimulationEngine(IWorldMap givenMap, Vector2d[] position, int stopLength, int startEnergy, int moveEnergyValue,
+                            App app){
         this.map = givenMap;
         this.moveDelay = stopLength;
         for (Vector2d vector2d : position) {
@@ -21,6 +24,7 @@ public class SimulationEngine implements IEngine, Runnable{
             this.map.place(tmp);
             animals.add(tmp);
         }
+        this.addObserver(app);
     }
     public void setMoves(MoveDirection[] moves){
         this.directions = moves;

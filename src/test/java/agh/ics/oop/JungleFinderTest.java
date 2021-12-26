@@ -30,8 +30,8 @@ public class JungleFinderTest {
     public void randomJungleFinderTest() {
         double maxDiff = -10e9;
         for(int i = 0; i < 10e6 * 5; i++) {
-            int width = new Random().nextInt(2000) + 10;
-            int height = new Random().nextInt(2000) + 10;
+            int width = new Random().nextInt(200) + 10;
+            int height = new Random().nextInt(200) + 10;
             int tmp = new Random().nextInt(10) + 1;
             double jungleRatio = (double) tmp / (double) (tmp + new Random().nextInt(20));
             RectangularMap map = new RectangularMap(width, height, jungleRatio);
