@@ -19,6 +19,7 @@ import static java.lang.Math.abs;
 import static java.lang.Math.decrementExact;
 import static java.lang.System.*;
 public class App extends Application implements IAnimalMoved{
+    private final GridUpdate gridUpdater = new GridUpdate();
     private AbstractWorldMap map;
     private final GridPane gridPane = new GridPane();
     private Thread engineThread;
@@ -28,10 +29,8 @@ public class App extends Application implements IAnimalMoved{
     @Override
     public void start(Stage primaryStage){
 
-        //primaryStage.show();
-        new GridUpdate(gridPane,map).run();
-        //createGrid();
-        Scene scene = new Scene(this.hBox, 800, 800);
+        gridUpdater.update(this.gridPane, this.map);
+        Scene scene = new Scene(this.hBox, 600, 600);
 
         gridPane.setGridLinesVisible(true);
         primaryStage.setScene(scene);
@@ -63,8 +62,9 @@ public class App extends Application implements IAnimalMoved{
                     }catch (IllegalArgumentException ex){
                         out.println(ex.getMessage());
                     }
-                    new GridUpdate(gridPane,map).run();
+                    //new GridUpdate(gridPane,map).run();
                     //createGrid();
+                    gridUpdater.update(gridPane, map);
                     gridPane.setGridLinesVisible(true);
                     engineThread = new Thread(engine);
                     engineThread.start();
@@ -76,14 +76,21 @@ public class App extends Application implements IAnimalMoved{
     @Override
     public void animalMoved() {
         //out.println("sadsafdiuygsafuyeragfuyeraUYBIUYTIUTV");
-        Platform.runLater(new GridUpdate(this.gridPane, this.map)::run);
+        gridUpdater.setParams(this.gridPane,this.map);
+        Platform.runLater(gridUpdater::run);
     }
 
 }
 class GridUpdate implements Runnable{
-    private final GridPane gridPane;
-    private final AbstractWorldMap map;
-    public GridUpdate(GridPane givenGridPane, AbstractWorldMap givenMap){
+    private  GridPane gridPane;
+    private  AbstractWorldMap map;
+    public GridUpdate(){}
+
+    public void update(GridPane givenGridPane, AbstractWorldMap givenMap){
+        this.setParams(givenGridPane,givenMap);
+        this.run();
+    }
+    public void setParams(GridPane givenGridPane, AbstractWorldMap givenMap){
         this.gridPane = givenGridPane;
         this.map = givenMap;
     }

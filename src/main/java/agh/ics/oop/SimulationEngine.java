@@ -32,7 +32,7 @@ public class SimulationEngine implements IEngine, Runnable{
 
     public void run(){
         for(int i = 0; i < this.directions.length; i++){
-            animals.get(i % animals.size()).move(new Random().nextInt(32));
+            animals.get(i % animals.size()).move(0);
             sthMoved();
             try {
                 Thread.sleep(moveDelay);
