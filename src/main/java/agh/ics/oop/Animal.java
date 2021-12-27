@@ -27,7 +27,6 @@ public class Animal implements IMapElement{
 
     public void move(int directionChange) {
         this.energyLoss(moveEnergyCost);
-        //int directionChange = genotype[new Random().nextInt(32)];
         switch (directionChange) {
             case 0 -> {
                 Vector2d nextPosition = new Vector2d(this.position.x, this.position.y).add(this.orientation.toUnitVector());

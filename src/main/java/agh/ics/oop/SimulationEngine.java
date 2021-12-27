@@ -1,62 +1,59 @@
 package agh.ics.oop;
 
 import agh.ics.oop.gui.App;
+import javafx.scene.layout.GridPane;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static java.lang.System.out;
 
 public class SimulationEngine implements IEngine, Runnable{
-    private MoveDirection[] directions = {MoveDirection.FORWARD};
-    private final List<Animal> animals = new ArrayList<>();
-    private final IWorldMap map;
+    private final AbstractWorldMap map;
     private final LinkedList<IAnimalMoved> observersList = new LinkedList<>();
     private int moveDelay = 0;
-    public SimulationEngine(IWorldMap givenMap, Vector2d[] position, int stopLength, int startEnergy, int moveEnergyValue,
-                            App app){
+    final private int startEnergy;
+    public SimulationEngine(AbstractWorldMap givenMap, Set<Vector2d> position, int givenRefreshRate, int givenStartEnergy,
+                            App app, int givenMoveEnergy){
+        this.startEnergy = givenStartEnergy;
         this.map = givenMap;
-        this.moveDelay = stopLength;
+        this.moveDelay = givenRefreshRate;
         for (Vector2d vector2d : position) {
-            Animal tmp = new Animal(this.map, vector2d,startEnergy, new Random().ints(32,0,7).toArray(),0);
+            Animal tmp = new Animal(this.map, vector2d,startEnergy,
+                    new Random().ints(32,0,7).toArray(),givenMoveEnergy);
             this.map.place(tmp);
-            animals.add(tmp);
         }
         this.addObserver(app);
     }
-    public void setMoves(MoveDirection[] moves){
-        this.directions = moves;
-    }
-
     public void run(){
-        for(int i = 0; i < this.directions.length; i++){
-            animals.get(i % animals.size()).move(0);
-            sthMoved();
+        while (true){
+            this.map.removeDeadAnimals();
+            //try {
+            this.map.animalMovement();
+            /*}catch (ConcurrentModificationException ex){
+                StackTraceElement[] tmp = ex.getStackTrace();
+                for(StackTraceElement cur : tmp){
+                    out.println(cur);
+                }out.println();
+            }*/
+            this.map.animalReproduction(this.startEnergy);
+            this.map.addGrass();
+            updateGUI();
             try {
                 Thread.sleep(moveDelay);
             } catch (InterruptedException e) {
-                //e.printStackTrace();
-                System.out.println("SLEEP INTERUPTED");
+                System.out.println("SLEEP INTERRUPTED");
             }
 
         }
-        map.removeDeadAnimals();
-
-
-
     }
-
-
 
     public String toString(){
         return map.toString();
     }
 
-    private void sthMoved(){
+    private void updateGUI(){
         for(IAnimalMoved observer : observersList){
-            observer.animalMoved();
+            observer.update(this.map);
         }
     }
     public void addObserver(IAnimalMoved observer){

@@ -12,7 +12,7 @@ public class GrassGenerationTest {
     @Test
     public void grassGenTest0() {
         int width = 100, height = 100, jungleRatio = 1;
-        RectangularMap map = new RectangularMap(width, height, jungleRatio);
+        RectangularMap map = new RectangularMap(width, height, jungleRatio, 0,20);
         Vector2d[] jungleCords = map.jungleSize;
         int jungleArea = (jungleCords[1].x - jungleCords[0].x + 1) * (jungleCords[1].y - jungleCords[0].y + 1);
         HashMap<Vector2d, IMapElement> grassMap;
@@ -45,7 +45,7 @@ public class GrassGenerationTest {
     @Test
     public void grassGenTest1() {
         int width = 47, height = 20, jungleRatio = 4 / 23;
-        RectangularMap map = new RectangularMap(width, height, jungleRatio);
+        RectangularMap map = new RectangularMap(width, height, jungleRatio, 0 ,20);
         Vector2d[] jungleCords = map.jungleSize;
         int jungleArea = (jungleCords[1].x - jungleCords[0].x + 1) * (jungleCords[1].y - jungleCords[0].y + 1);
         HashMap<Vector2d, IMapElement> grassMap;
@@ -78,7 +78,7 @@ public class GrassGenerationTest {
     @Test//test with bigger jungle than savanna
     public void grassGenTest2() {
         int width = 35, height = 69, jungleRatio = 17 / 3;
-        RectangularMap map = new RectangularMap(width, height, jungleRatio);
+        RectangularMap map = new RectangularMap(width, height, jungleRatio,0 ,20);
         Vector2d[] jungleCords = map.jungleSize;
         int jungleArea = (jungleCords[1].x - jungleCords[0].x + 1) * (jungleCords[1].y - jungleCords[0].y + 1);
         int savannaArea = width * height - jungleArea;
@@ -115,7 +115,7 @@ public class GrassGenerationTest {
         int width = rand.nextInt(200) + 1, height = rand.nextInt(200) + 1, jungleRatio = (rand.nextInt(200) + 1) / (rand.nextInt(200) + 1);
         //int width = 161, height = 109, jungleRatio = 119, savannaRatio = 131;
         System.out.println("Rand params width: " + width + " height: " + height + " jungleRatio: " + jungleRatio);
-        RectangularMap map = new RectangularMap(width, height, jungleRatio);
+        RectangularMap map = new RectangularMap(width, height, jungleRatio,0,20);
         Vector2d[] jungleCords = map.jungleSize;
         //System.out.println(jungleCords[0]+ " "+ jungleCords[1]);
         int jungleArea = (jungleCords[1].x - jungleCords[0].x + 1) * (jungleCords[1].y - jungleCords[0].y + 1);

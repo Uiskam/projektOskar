@@ -1,19 +1,24 @@
 package agh.ics.oop;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.System.out;
 
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver {
-    final protected Map<Vector2d, LinkedList<Animal>> animalMap = new LinkedHashMap<>();
+    final protected Map<Vector2d, LinkedList<Animal>> animalMap = new ConcurrentHashMap<>();
     final protected Map<Vector2d, Grass> grassMap = new LinkedHashMap<>();
     protected final Vector2d[] mapSize = {new Vector2d(0, 0), new Vector2d(0, 0)};
     protected final Vector2d[] jungleSize;
+    final int moveEnergy;
+    final int plantEnergy;
 
-    public AbstractWorldMap(int width, int height, double jungleRatio) {//generate grass on the filed
+    public AbstractWorldMap(int width, int height, double jungleRatio, int givenEnergyMove, int givenPlantEnergy) {//generate grass on the filed
         mapSize[0] = new Vector2d(0, 0);
         mapSize[1] = new Vector2d(width - 1, height - 1);
         jungleSize = findJungleLocation(width, height, jungleRatio);
+        this.moveEnergy = givenEnergyMove;
+        this.plantEnergy = givenPlantEnergy;
     }
 
     private Vector2d[] findJungleLocation(int xMax, int yMax, double jungleRatio) {
@@ -65,19 +70,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         return animalMap.containsKey(position) || grassMap.containsKey(position);
     }
 
-
-    private Animal getAnimalWithMaxEnergy(Vector2d position){
-        if(!animalMap.containsKey(position) || animalMap.get(position).size() == 0)
-            throw new IllegalArgumentException("Position without animals was given");
-        Animal animalFound = animalMap.get(position).get(0);
-        for(Animal animal : animalMap.get(position)){
-            if(animal.getEnergy() > animalFound.getEnergy()) {
-                animalFound = animal;
-            }
-        }
-        return animalFound;
-    }
-
     public Object objectAt(Vector2d position) {
         if (animalMap.containsKey(position)) {
             return getAnimalWithMaxEnergy(position);
@@ -96,6 +88,25 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         return mapSize;
     }
 
+    public void animalMovement(){
+        for (Vector2d position : animalMap.keySet()) {
+            for (Animal animal : animalMap.get(position)) {
+                animal.move(animal.getGenotype()[new Random().nextInt(32)]);
+            }
+        }
+    }
+
+    private Animal getAnimalWithMaxEnergy(Vector2d position){
+        if(!animalMap.containsKey(position) || animalMap.get(position).size() == 0)
+            throw new IllegalArgumentException("Position without animals was given");
+        Animal animalFound = animalMap.get(position).get(0);
+        for(Animal animal : animalMap.get(position)){
+            if(animal.getEnergy() > animalFound.getEnergy()) {
+                animalFound = animal;
+            }
+        }
+        return animalFound;
+    }
 
     public void removeDeadAnimals() {
         animalMap.keySet().forEach(position ->
@@ -128,7 +139,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         animalMap.get(newPosition).add(animal);
     }
 
-    public void eatGrass(int plantEnergy) {
+    public void eatGrass() {
         for (Vector2d animalPosition : animalMap.keySet()) {
             if (grassMap.containsKey(animalPosition)) {
                 grassMap.remove(animalPosition);
@@ -176,7 +187,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                     } else {
                         childGenotype = writeGenotype(parent1Genotype, parent0Genotype, 32 - numberOfParent0Genes);
                     }
-                    Animal child = new Animal(this, position, parent0.getEnergy() / 4 + parent1.getEnergy() / 4, childGenotype,0);
+                    Animal child = new Animal(this, position, parent0.getEnergy() / 4 + parent1.getEnergy() / 4, childGenotype,moveEnergy);
                     parent0.energyLoss(parent0.getEnergy() / 4);
                     parent1.energyLoss(parent1.getEnergy() / 4);
                     animalMap.get(position).add(child);

@@ -9,7 +9,8 @@ public enum MenuParamEntrance {
     PLANT_ENERGY,
     INITIAL_ANIMAL_NUMBER,
     BORDERLESS_MAP_CHECK,
-    ENCLOSED_MAP_CHECK;
+    ENCLOSED_MAP_CHECK,
+    REFRESH_RATE;
 
     int getIndex() {
         int index = 0;
@@ -41,6 +42,7 @@ public enum MenuParamEntrance {
             case INITIAL_ANIMAL_NUMBER -> "initial number of animals: ";
             case BORDERLESS_MAP_CHECK -> "borderless map: ";
             case ENCLOSED_MAP_CHECK -> "enclosed map: ";
+            case REFRESH_RATE -> "refresh rate[ms]: ";
         };
     }
 }

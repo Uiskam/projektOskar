@@ -18,7 +18,7 @@ public class AnimalFunctionsTest {
 
     @Test
     public void animalPlacementAndPositionChangeTest() {
-        RectangularMap map = new RectangularMap(10, 10, 1);
+        RectangularMap map = new RectangularMap(10, 10, 1,10,10);
         Animal testAnimal = new Animal(map, new Vector2d(5, 5), 10, new Random().ints(32, 0, 7).toArray(),0);
         map.place(testAnimal);
         HashMap<Vector2d, IMapElement> objects = map.getObjects();
@@ -27,7 +27,7 @@ public class AnimalFunctionsTest {
 
     @Test
     public void animalRotationTest() {
-        RectangularMap map = new RectangularMap(10, 10, 1);
+        RectangularMap map = new RectangularMap(10, 10, 1,10,10);
         Animal testAnimal = new Animal(map, new Vector2d(5, 5), 1, new Random().ints(32, 0, 7).toArray(),0);
         MapDirection[] correctDirections = {MapDirection.NORTH_EAST, MapDirection.SOUTH_EAST, MapDirection.WEST,
                 MapDirection.SOUTH_EAST, MapDirection.NORTH_EAST, MapDirection.NORTH};
@@ -43,7 +43,7 @@ public class AnimalFunctionsTest {
 
     @Test
     public void animalMovementTest0() {
-        WrappedMap map = new WrappedMap(10, 10, 1);
+        WrappedMap map = new WrappedMap(10, 10, 1,0,20);
         Animal testAnimal = new Animal(map, new Vector2d(5, 5), 1, new Random().ints(32, 0, 7).toArray(),0);
         map.place(testAnimal);
 
@@ -105,7 +105,7 @@ public class AnimalFunctionsTest {
 
     @Test
     public void eatingTest() {
-        WrappedMap map = new WrappedMap(10, 10, 1);
+        WrappedMap map = new WrappedMap(10, 10, 1,0 ,20);
         Animal testAnimal = new Animal(map, new Vector2d(5, 5), 1, new Random().ints(32, 0, 7).toArray(),0);
         map.place(testAnimal);
         map.addGrass();
@@ -136,7 +136,7 @@ public class AnimalFunctionsTest {
             }
         }
 
-        map.eatGrass(10);
+        map.eatGrass();
         testAnimal.move(4);
         objects = map.getObjects();
         assertNull(objects.get(grasPosition));
@@ -150,7 +150,7 @@ public class AnimalFunctionsTest {
     }
     @Test
     public void reproductionTest() {
-        RectangularMap map = new RectangularMap(10, 10, 1);
+        RectangularMap map = new RectangularMap(10, 10, 1, 0 ,20);
         int[] genotype = new int[32];
         for (int i = 0; i < 32; i++) {
             genotype[i] = 0;

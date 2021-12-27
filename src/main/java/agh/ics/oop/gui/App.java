@@ -16,8 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.lang.Math.abs;
@@ -26,8 +25,11 @@ import static java.lang.System.*;
 
 public class App extends Application implements IAnimalMoved {
     private final GridUpdate gridUpdater = new GridUpdate();
-    private AbstractWorldMap map;
-    private final GridPane gridPane = new GridPane();
+    private WrappedMap wrappedMap;
+    private RectangularMap rectangularMap;
+
+    private final GridPane wrappedGridPane = new GridPane();
+    private final GridPane rectangularGridPane = new GridPane();
     private Thread engineThread;
     private VBox menuWindow;
     ArrayList<HBox> menuParamEntrance = new ArrayList<>();
@@ -42,11 +44,12 @@ public class App extends Application implements IAnimalMoved {
 
     @Override
     public void start(Stage primaryStage) {
-        Scene menuScene = new Scene(this.menuWindow, 600, 600);
+        GridUpdate gridUpdater = new GridUpdate();
+        Scene menuScene = new Scene(this.menuWindow, 600, 225);
         primaryStage.setScene(menuScene);
         primaryStage.show();
         guiButtons.get(GuiButtons.START.getIndex()).setOnAction(event -> {
-            int height, width, startEnergy, moveEnergy, plantEnergy, initialNumberOfAnimals;
+            int height, width, startEnergy, moveEnergy, plantEnergy, initialNumberOfAnimals, refreshRate;
             boolean magicModeWrapped, magicModeRect, inputDataError = false;
             double jungleRatio;
             Label errorText;
@@ -66,6 +69,8 @@ public class App extends Application implements IAnimalMoved {
                 plantEnergy = Integer.parseInt(tmp);
                 tmp = getData(MenuParamEntrance.INITIAL_ANIMAL_NUMBER);
                 initialNumberOfAnimals = Integer.parseInt(tmp);
+                tmp = getData(MenuParamEntrance.REFRESH_RATE);
+                refreshRate = Integer.parseInt(tmp);
                 magicModeWrapped = ((CheckBox)menuParamEntrance.get(MenuParamEntrance.BORDERLESS_MAP_CHECK.getIndex()).getChildren().get(1)).isSelected();
                 magicModeRect = ((CheckBox)menuParamEntrance.get(MenuParamEntrance.ENCLOSED_MAP_CHECK.getIndex()).getChildren().get(1)).isSelected();
 
@@ -75,20 +80,66 @@ public class App extends Application implements IAnimalMoved {
                         "Tex fields CANNOT contain any character apart from digits, this includes white character\n" +
                         "All fileds MUST be filled with wanted values" +
                         "Please restart program and input correct data\n");
-                Scene errorScene = new Scene(errorText,700,100);
+                Scene errorScene = new Scene(errorText,600,100);
                 primaryStage.setScene(errorScene);
                 return;
             }
-            Label label  = new Label("DUPA");
-            Scene simScene = new Scene(label,100,100);
+            Set<Vector2d> initialPositions = getStartingPositions(initialNumberOfAnimals,width,height);
+            wrappedMap = new WrappedMap(width,height,jungleRatio,moveEnergy,plantEnergy);
+            rectangularMap = new RectangularMap(width,height,jungleRatio,moveEnergy,plantEnergy);
+            SimulationEngine wrappedSim = new SimulationEngine(wrappedMap, initialPositions, refreshRate, startEnergy,
+                    this, moveEnergy);
+            SimulationEngine rectangularSim = new SimulationEngine(rectangularMap, initialPositions, refreshRate, startEnergy,
+                    this, moveEnergy);
+            gridUpdater.update(wrappedGridPane,wrappedMap);
+            gridUpdater.update(rectangularGridPane,rectangularMap);
+
+            HBox maps = new HBox(wrappedGridPane,rectangularGridPane);
+            Scene simScene = new Scene(maps);
             primaryStage.setScene(simScene);
+
+            Thread wrappedSimThread = new Thread(wrappedSim);
+            Thread rectangularSimThread = new Thread(rectangularSim);
+            wrappedSimThread.start();
+            //rectangularSimThread.start();
         });
     }
 
+    private Set<Vector2d> getStartingPositions(int n, int width, int height){
+        n = Math.min(n, width * height);
+        Set<Vector2d> initialPositions = new HashSet<>();
+        Random generator = new Random();
+        for(int i = 0; i < n; i++){
+            int counter = 0;
+            Vector2d newPosition = new Vector2d(generator.nextInt(width), generator.nextInt(height));
+            for(int j = 0; j < 100 && initialPositions.contains(newPosition); j++){
+                newPosition = new Vector2d(generator.nextInt(width), generator.nextInt(height));
+            }
+            if(initialPositions.contains(newPosition)){
+                for(int x = 0; x < width;  x++){
+                    for(int y = 0; y < height; y++){
+                        Vector2d curPos = new Vector2d(x,y);
+                        if(!initialPositions.contains(curPos)){
+                            newPosition = curPos;
+                            x = width;
+                            y = height;
+                        }
+                    }
+                }
+            }
+            initialPositions.add(newPosition);
+        }
+        return initialPositions;
+    }
 
     @Override
-    public void animalMoved() {
-        gridUpdater.setParams(this.gridPane, this.map);
+    public void update(AbstractWorldMap map) {
+        if(map instanceof WrappedMap){
+            gridUpdater.setParams(this.wrappedGridPane,this.wrappedMap);
+        }
+        else{
+            gridUpdater.setParams(this.rectangularGridPane,this.rectangularMap);
+        }
         Platform.runLater(gridUpdater::run);
     }
 
@@ -123,7 +174,8 @@ public class App extends Application implements IAnimalMoved {
                 menuParamEntrance.get(MenuParamEntrance.START_ENERGY.getIndex()),
                 menuParamEntrance.get(MenuParamEntrance.MOVE_ENERGY.getIndex()),
                 menuParamEntrance.get(MenuParamEntrance.PLANT_ENERGY.getIndex()),
-                menuParamEntrance.get(MenuParamEntrance.INITIAL_ANIMAL_NUMBER.getIndex()));
+                menuParamEntrance.get(MenuParamEntrance.INITIAL_ANIMAL_NUMBER.getIndex()),
+                menuParamEntrance.get(MenuParamEntrance.REFRESH_RATE.getIndex()));
         HBox mainParamsArea = new HBox(mapParamArea, simParamArea);
 
         HBox setMagicArea = new HBox(new Label("mark to set magic mode for: "),

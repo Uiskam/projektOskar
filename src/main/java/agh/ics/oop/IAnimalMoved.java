@@ -1,5 +1,7 @@
 package agh.ics.oop;
 
+import javafx.scene.layout.GridPane;
+
 public interface IAnimalMoved {
-    public void animalMoved();
+    public void update(AbstractWorldMap map);
 }
