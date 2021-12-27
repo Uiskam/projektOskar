@@ -15,32 +15,33 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.stream.Stream;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.decrementExact;
 import static java.lang.System.*;
-public class App extends Application implements IAnimalMoved{
+
+public class App extends Application implements IAnimalMoved {
     private final GridUpdate gridUpdater = new GridUpdate();
     private AbstractWorldMap map;
     private final GridPane gridPane = new GridPane();
     private Thread engineThread;
-    private HBox hBox;
-    private VBox controls;
     private VBox menuWindow;
-
+    ArrayList<HBox> menuParamEntrance = new ArrayList<>();
+    ArrayList<Button> guiButtons = new ArrayList<>();
 
 
     @Override
-    public void init() throws IllegalArgumentException{
+    public void init() throws IllegalArgumentException {
         menuWindow = createMenu();
+
     }
 
     @Override
-    public void start(Stage primaryStage){
-
-
-
+    public void start(Stage primaryStage) {
+        menuWindow = createMenu();
 
 
         //gridUpdater.update(this.gridPane, this.map);
@@ -53,47 +54,55 @@ public class App extends Application implements IAnimalMoved{
     }
 
 
-
     @Override
     public void animalMoved() {
-        gridUpdater.setParams(this.gridPane,this.map);
+        gridUpdater.setParams(this.gridPane, this.map);
         Platform.runLater(gridUpdater::run);
     }
 
-    private HBox createBoxWithLabelAndText(String labelText){
+    private HBox createBoxWithLabelAndText(String labelText) {
         Label label = new Label(labelText);
         TextField textField = new TextField();
-        HBox hBox = new HBox(label,textField);
+        HBox hBox = new HBox(label, textField);
         hBox.setAlignment(Pos.CENTER);
         return hBox;
     }
-    private VBox createMenu(){
-        VBox menu;
+
+    private VBox createMenu() {
+        for(GuiButtons curButton : GuiButtons.values()){
+            guiButtons.add(new Button(curButton.toString()));
+        }
+        for (MenuParamEntrance curVal : MenuParamEntrance.values()) {
+            if (curVal != MenuParamEntrance.BORDERLESS_MAP_CHECK && curVal != MenuParamEntrance.ENCLOSED_MAP_CHECK) {
+                menuParamEntrance.add(new HBox(new Label(curVal.toString()), new TextField()));
+            } else {
+                menuParamEntrance.add(new HBox(new Label(curVal.toString()), new CheckBox()));
+            }
+            menuParamEntrance.get(menuParamEntrance.size() - 1).setAlignment(Pos.CENTER_LEFT);
+
+        }
+
         Label menuHeading = new Label("Set initial simulation conditions");
-        Label disclaimer = new Label("all values MUST be positive");
+        VBox mapParamArea = new VBox(new Label("map parameters: "),
+                menuParamEntrance.get(MenuParamEntrance.HEIGHT.getIndex()),
+                menuParamEntrance.get(MenuParamEntrance.WIDTH.getIndex()),
+                menuParamEntrance.get(MenuParamEntrance.JUNGLE_RATIO.getIndex()));
+        VBox simParamArea = new VBox(new Label("simulation engine parameters: "),
+                menuParamEntrance.get(MenuParamEntrance.START_ENERGY.getIndex()),
+                menuParamEntrance.get(MenuParamEntrance.MOVE_ENERGY.getIndex()),
+                menuParamEntrance.get(MenuParamEntrance.PLANT_ENERGY.getIndex()),
+                menuParamEntrance.get(MenuParamEntrance.INITIAL_ANIMAL_NUMBER.getIndex()));
+        HBox mainParamsArea = new HBox(mapParamArea, simParamArea);
 
-        Label mapParamHeading = new Label("map parameters:");
-        HBox height = createBoxWithLabelAndText("height :");
-        HBox width = createBoxWithLabelAndText("width :");
-        HBox jungleRatio = createBoxWithLabelAndText("jungleRatio :");
-        VBox mapParamArea = new VBox(mapParamHeading,height,width,jungleRatio);
-        mapParamArea.setAlignment(Pos.TOP_CENTER);
-        Label simParamHeading = new Label("simulation parameters:");
-        HBox startEnergy = createBoxWithLabelAndText("start energy: ");
-        HBox moveEnergy = createBoxWithLabelAndText("move energy: ");
-        HBox plantEnergy = createBoxWithLabelAndText("plant energy: ");
-        VBox simParamArea = new VBox(simParamHeading,startEnergy,moveEnergy,plantEnergy);
+        HBox setMagicArea = new HBox(new Label("mark to set magic mode for: "),
+                menuParamEntrance.get(MenuParamEntrance.BORDERLESS_MAP_CHECK.getIndex()),
+                menuParamEntrance.get(MenuParamEntrance.ENCLOSED_MAP_CHECK.getIndex()));
 
-        HBox parametersSettingArea = new HBox(mapParamArea,simParamArea);
-
-        Label wrappedMapLabel = new Label("Borderless map");
-        CheckBox wrappedMapConsent = new CheckBox();
-
-        VBox menuBox = new VBox(menuHeading,disclaimer,parametersSettingArea);
+        VBox menuBox = new VBox(menuHeading,mainParamsArea,setMagicArea,guiButtons.get(GuiButtons.START.getIndex()));
         menuBox.setAlignment(Pos.TOP_CENTER);
         menuBox.setFillWidth(false);
+        menuBox.setSpacing(2);
         return menuBox;
-
     }
 
 }

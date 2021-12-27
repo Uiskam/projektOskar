@@ -4,10 +4,21 @@ public enum GuiButtons {
     START,
     STOP;
 
-    int get(){
-        return switch (this){
-            case START -> 0;
-            case STOP -> 1;
+    int getIndex(){
+        int index = 0;
+        for(GuiButtons curVal : GuiButtons.values()){
+            if(this == curVal)
+                return index;
+            index++;
+        }
+        return -1;
+    }
+
+    @Override
+    public String toString(){
+        return switch (this) {
+            case START -> "START";
+            case STOP -> "STOP";
         };
     }
 }
