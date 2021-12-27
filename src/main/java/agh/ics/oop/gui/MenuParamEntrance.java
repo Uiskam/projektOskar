@@ -21,6 +21,14 @@ public enum MenuParamEntrance {
         return -1;
     }
 
+    public int dataType(){
+        return switch (this) {
+            case HEIGHT, WIDTH, START_ENERGY, MOVE_ENERGY, PLANT_ENERGY, INITIAL_ANIMAL_NUMBER -> 0;
+            case JUNGLE_RATIO -> 1;
+            case BORDERLESS_MAP_CHECK, ENCLOSED_MAP_CHECK -> 2;
+        };
+    }
+
     @Override
     public String toString(){
         return switch (this) {

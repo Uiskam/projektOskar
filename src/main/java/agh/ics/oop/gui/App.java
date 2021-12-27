@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -41,16 +42,29 @@ public class App extends Application implements IAnimalMoved {
 
     @Override
     public void start(Stage primaryStage) {
-        menuWindow = createMenu();
-
-
-        //gridUpdater.update(this.gridPane, this.map);
-        //Scene scene = new Scene(this.hBox, 600, 600);
-        Scene scene = new Scene(this.menuWindow, 600, 600);
-
-        gridPane.setGridLinesVisible(true);
-        primaryStage.setScene(scene);
+        Scene menuScene = new Scene(this.menuWindow, 600, 600);
+        primaryStage.setScene(menuScene);
         primaryStage.show();
+
+        guiButtons.get(GuiButtons.START.getIndex()).setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                int height, width, startEnergy, moveEnergy, plantEnergy, initialNumberOfAnimals;
+                boolean magicModeWrapped, magicModeRect, inputDataError = false;
+                double jungleRatio;
+                /*do {
+                    //TextField tmp = new TextField();
+                    Node input = menuParamEntrance.get(MenuParamEntrance.HEIGHT.getIndex()).getChildren().get(1);
+                    if(input instanceof TextField){
+                        ((TextField) input).getText()
+                    }
+                    String tmp =
+                }while (inputDataError);*/
+                Label label  = new Label("DUPA");
+                Scene simScene = new Scene(label,100,100);
+                primaryStage.setScene(simScene);
+            }
+        });
     }
 
 
@@ -101,7 +115,7 @@ public class App extends Application implements IAnimalMoved {
         VBox menuBox = new VBox(menuHeading,mainParamsArea,setMagicArea,guiButtons.get(GuiButtons.START.getIndex()));
         menuBox.setAlignment(Pos.TOP_CENTER);
         menuBox.setFillWidth(false);
-        menuBox.setSpacing(2);
+        menuBox.setSpacing(5);
         return menuBox;
     }
 
