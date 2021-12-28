@@ -1,16 +1,13 @@
 package agh.ics.oop;
 
 import agh.ics.oop.gui.App;
-import javafx.scene.layout.GridPane;
-
 import java.util.*;
-
 import static java.lang.System.out;
 
-public class SimulationEngine implements IEngine, Runnable{
+public class SimulationEngine implements Runnable{
     private final AbstractWorldMap map;
     private final LinkedList<IAnimalMoved> observersList = new LinkedList<>();
-    private int moveDelay = 0;
+    private int moveDelay;
     final private int startEnergy;
     public SimulationEngine(AbstractWorldMap givenMap, Set<Vector2d> position, int givenRefreshRate, int givenStartEnergy,
                             App app, int givenMoveEnergy){
@@ -20,6 +17,7 @@ public class SimulationEngine implements IEngine, Runnable{
         for (Vector2d vector2d : position) {
             Animal tmp = new Animal(this.map, vector2d,startEnergy,
                     new Random().ints(32,0,7).toArray(),givenMoveEnergy);
+            tmp.setMaxEnergy(givenStartEnergy);
             this.map.place(tmp);
         }
         this.addObserver(app);
@@ -37,13 +35,13 @@ public class SimulationEngine implements IEngine, Runnable{
             }*/
             this.map.animalReproduction(this.startEnergy);
             this.map.addGrass();
-            updateGUI();
+
             try {
                 Thread.sleep(moveDelay);
             } catch (InterruptedException e) {
                 System.out.println("SLEEP INTERRUPTED");
             }
-
+            updateGUI();
         }
     }
 

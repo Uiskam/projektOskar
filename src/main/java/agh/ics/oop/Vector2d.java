@@ -12,7 +12,7 @@ public class Vector2d {
     }
 
     public String toString() {
-        return "(" + String.valueOf(this.x) + "," + String.valueOf(this.y) + ")";
+        return "(" + this.x + "," + this.y + ")";
     }
 
     boolean precedes(Vector2d other) {

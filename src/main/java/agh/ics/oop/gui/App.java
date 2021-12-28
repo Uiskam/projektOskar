@@ -24,7 +24,8 @@ import static java.lang.Math.decrementExact;
 import static java.lang.System.*;
 
 public class App extends Application implements IAnimalMoved {
-    private final GridUpdate gridUpdater = new GridUpdate();
+    private final GridUpdate wrappedGridUpdater = new GridUpdate();
+    private final GridUpdate rectangularGridUpdater = new GridUpdate();
     private WrappedMap wrappedMap;
     private RectangularMap rectangularMap;
 
@@ -44,7 +45,6 @@ public class App extends Application implements IAnimalMoved {
 
     @Override
     public void start(Stage primaryStage) {
-        GridUpdate gridUpdater = new GridUpdate();
         Scene menuScene = new Scene(this.menuWindow, 600, 225);
         primaryStage.setScene(menuScene);
         primaryStage.show();
@@ -91,8 +91,8 @@ public class App extends Application implements IAnimalMoved {
                     this, moveEnergy);
             SimulationEngine rectangularSim = new SimulationEngine(rectangularMap, initialPositions, refreshRate, startEnergy,
                     this, moveEnergy);
-            gridUpdater.update(wrappedGridPane,wrappedMap);
-            gridUpdater.update(rectangularGridPane,rectangularMap);
+            wrappedGridUpdater.update(wrappedGridPane,wrappedMap);
+            rectangularGridUpdater.update(rectangularGridPane,rectangularMap);
 
             HBox maps = new HBox(wrappedGridPane,rectangularGridPane);
             Scene simScene = new Scene(maps);
@@ -101,7 +101,7 @@ public class App extends Application implements IAnimalMoved {
             Thread wrappedSimThread = new Thread(wrappedSim);
             Thread rectangularSimThread = new Thread(rectangularSim);
             wrappedSimThread.start();
-            //rectangularSimThread.start();
+            rectangularSimThread.start();
         });
     }
 
@@ -135,20 +135,13 @@ public class App extends Application implements IAnimalMoved {
     @Override
     public void update(AbstractWorldMap map) {
         if(map instanceof WrappedMap){
-            gridUpdater.setParams(this.wrappedGridPane,this.wrappedMap);
+            wrappedGridUpdater.setParams(this.wrappedGridPane,this.wrappedMap);
+            Platform.runLater(wrappedGridUpdater::run);
         }
         else{
-            gridUpdater.setParams(this.rectangularGridPane,this.rectangularMap);
+            rectangularGridUpdater.setParams(this.rectangularGridPane,this.rectangularMap);
+            Platform.runLater(rectangularGridUpdater::run);
         }
-        Platform.runLater(gridUpdater::run);
-    }
-
-    private HBox createBoxWithLabelAndText(String labelText) {
-        Label label = new Label(labelText);
-        TextField textField = new TextField();
-        HBox hBox = new HBox(label, textField);
-        hBox.setAlignment(Pos.CENTER);
-        return hBox;
     }
 
     private VBox createMenu() {

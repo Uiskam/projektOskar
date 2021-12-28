@@ -1,9 +1,5 @@
 package agh.ics.oop;
 
-import java.util.*;
-
-import static java.lang.Math.sqrt;
-
 public class WrappedMap extends AbstractWorldMap implements IWorldMap{
 
     public WrappedMap(int width, int height, double jungleRatio, int givenEnergyMove, int givenPlantEnergy) {

@@ -2,9 +2,6 @@ package agh.ics.oop;
 
 import agh.ics.oop.gui.App;
 import javafx.application.Application;
-import org.jetbrains.annotations.NotNull;
-import java.util.SortedMap;
-import java.util.*;
 
 import static java.lang.System.*;
 

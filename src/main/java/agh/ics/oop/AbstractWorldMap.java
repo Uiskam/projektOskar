@@ -14,23 +14,20 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     final int plantEnergy;
 
     public AbstractWorldMap(int width, int height, double jungleRatio, int givenEnergyMove, int givenPlantEnergy) {//generate grass on the filed
-        mapSize[0] = new Vector2d(0, 0);
-        mapSize[1] = new Vector2d(width - 1, height - 1);
-        jungleSize = findJungleLocation(width, height, jungleRatio);
+        this.mapSize[0] = new Vector2d(0, 0);
+        this.mapSize[1] = new Vector2d(width - 1, height - 1);
+        this.jungleSize = findJungleLocation(width, height, jungleRatio);
         this.moveEnergy = givenEnergyMove;
         this.plantEnergy = givenPlantEnergy;
     }
 
     private Vector2d[] findJungleLocation(int xMax, int yMax, double jungleRatio) {
-        long mapArea = (long)((long) xMax * (long)yMax);
+        long mapArea = (long) xMax * (long)yMax;
         int jungleArea = (int)((jungleRatio * mapArea) /(1.0 + jungleRatio));
-        double doubleArea = ((jungleRatio * (double)mapArea) /(1.0 + jungleRatio));
-        //out.println("jungle area " + jungleArea + " " + doubleArea + " " + mapArea + " " + jungleRatio);
         int xJungle = 1, yJungle = 1;
         Vector2d[] expansionOrder = {new Vector2d(0, 1), new Vector2d(1, 0)};
 
         int expIndex = 0;
-        //out.println("requierd area " + jungleArea);
         while (xJungle * yJungle < jungleArea) {
             //out.println(xJungle + " " + yJungle);
             xJungle = Math.min(xJungle + expansionOrder[expIndex].x, xMax);
@@ -90,7 +87,8 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     public void animalMovement(){
         for (Vector2d position : animalMap.keySet()) {
-            for (Animal animal : animalMap.get(position)) {
+            List<Animal> animalsAtPosition = new LinkedList<>(animalMap.get(position));
+            for (Animal animal : animalsAtPosition) {
                 animal.move(animal.getGenotype()[new Random().nextInt(32)]);
             }
         }
@@ -124,11 +122,8 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public void positionChanged(Vector2d oldPosition, Vector2d newPosition, Animal animal) throws IllegalArgumentException {
         //out.println(oldPosition + " " + newPosition);
         if(animalMap.get(oldPosition) == null){
-            throw new NullPointerException(oldPosition + "is non existant");
+            throw new NullPointerException(oldPosition + "is non existing");
         }
-        //out.println("SADASD " + animalMap.get(oldPosition));
-        //List<Animal> tmp = animalMap.get(oldPosition);
-        //tmp.remove(animal);
         animalMap.get(oldPosition).remove(animal);
         //out.println(animalMap.get(oldPosition).get(0));
         if (animalMap.get(oldPosition).isEmpty()) {
@@ -178,7 +173,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                 if (parent0.getEnergy() >= startEnergy / 2.0 && parent1.getEnergy() >= startEnergy / 2.0) {
                     int[] parent0Genotype = parent0.getGenotype(), parent1Genotype = parent1.getGenotype();
                     int genotypeLength = parent0Genotype.length;
-                    int[] childGenotype = new int[32];
+                    int[] childGenotype;
                     int numberOfParent0Genes = parent0.getEnergy() * genotypeLength /
                             (parent0.getEnergy() + parent1.getEnergy());
                     int parent0Side = new Random().nextInt(2);

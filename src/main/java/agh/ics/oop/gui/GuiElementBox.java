@@ -2,56 +2,70 @@ package agh.ics.oop.gui;
 
 import agh.ics.oop.Animal;
 import agh.ics.oop.IMapElement;
-import agh.ics.oop.Vector2d;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
-import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
 
 
-import java.awt.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 public class GuiElementBox {
-    Image image;
-    ImageView imageView;
-    VBox vbox = new VBox();
-    Label label;
-
-    public GuiElementBox(GridPane gridPane, IMapElement element){
+    static Image[] animalHealth;
+    static Image animalSkin;
+    static Image grassSkin;
+    static {
         try {
-            image = new Image(new FileInputStream(element.textureLocation()));
+            animalHealth = new Image[]{
+                    new Image(new FileInputStream("src/main/resources/health0.png")),
+                    new Image(new FileInputStream("src/main/resources/health1.png")),
+                    new Image(new FileInputStream("src/main/resources/health2.png")),
+                    new Image(new FileInputStream("src/main/resources/health3.png")),
+                    new Image(new FileInputStream("src/main/resources/health4.png")),
+                    new Image(new FileInputStream("src/main/resources/health5.png")),
+                    new Image(new FileInputStream("src/main/resources/health6.png")),
+                    new Image(new FileInputStream("src/main/resources/health7.png")),
+                    new Image(new FileInputStream("src/main/resources/health8.png")),
+                    new Image(new FileInputStream("src/main/resources/health9.png")),
+                    };
+            animalSkin = new Image(new FileInputStream("src/main/resources/giraffe.png"));
+            grassSkin = new Image(new FileInputStream("src/main/resources/grass.png"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            if(element instanceof Animal){
-                System.out.println("ERROR " + element.toString());
-            }
-            else{
-                System.out.println("ERROR1 ");
-            }
-            //System.out.println();
         }
-        imageView = new ImageView(image);
-        imageView.setFitWidth(20);
-        imageView.setFitHeight(20);
-        vbox.getChildren().add(imageView);
-        vbox.setAlignment(Pos.CENTER);
-        if(element instanceof Animal) {
-            label = new Label("Z " + element.getPosition().toString());
-        }
-        else {
-            label = new Label("Grass");
-        }
-        vbox.getChildren().add(label);
+
     }
 
-    public VBox getVbox() {
-        return vbox;
+    StackPane mapObject;
+    public GuiElementBox(IMapElement element){
+        ImageView energyLvl = null, texture;
+        if(element instanceof Animal){
+            int maxEnergy = ((Animal) element).getMaxEnergy();
+            int currentEnergy = ((Animal) element).getEnergy();
+            int index = (int)(Math.min(10 * Math.max(0.0,currentEnergy/(double)maxEnergy),9));
+            energyLvl = new ImageView(animalHealth[index]);
+            energyLvl.setFitWidth(20);
+            energyLvl.setFitHeight(20);
+            texture = new ImageView(animalSkin);
+        }
+        else{
+            texture = new ImageView(grassSkin);
+        }
+        texture.setFitHeight(20);
+        texture.setFitWidth(20);
+        if(energyLvl != null){
+            mapObject = new StackPane(energyLvl,texture);
+        }
+        else {
+            mapObject = new StackPane(texture);
+        }
+
+        mapObject.setAlignment(Pos.CENTER);
+
+    }
+
+    public StackPane getVbox() {
+        return mapObject;
     }
 }

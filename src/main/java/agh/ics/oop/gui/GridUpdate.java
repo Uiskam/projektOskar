@@ -61,7 +61,7 @@ public class GridUpdate implements Runnable{
         HashMap<Vector2d, IMapElement> mapObjects = this.map.getObjects();
         for(Vector2d cur : mapObjects.keySet()){
             Label label = new Label(mapObjects.get(cur).toString());
-            GuiElementBox animalVisualisation = new GuiElementBox(this.gridPane,mapObjects.get(cur));
+            GuiElementBox animalVisualisation = new GuiElementBox(mapObjects.get(cur));
             gridPane.add(animalVisualisation.getVbox(),mapObjects.get(cur).getPosition().x - mapSize[0].x + 1, mapObjects.get(cur).getPosition().y - mapSize[0].y + 1);
             GridPane.setHalignment(label, HPos.CENTER);
         }

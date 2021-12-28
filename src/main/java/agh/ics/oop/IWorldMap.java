@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 /**
  * The interface responsible for interacting with the map of the world.
- * Assumes that Vector2d and MoveDirection classes are defined.
+ * Assumes that Vector2d and  classes are defined.
  *
  * @author apohllo
  *
