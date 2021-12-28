@@ -9,11 +9,16 @@ import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.util.*;
@@ -26,12 +31,14 @@ import static java.lang.System.*;
 public class App extends Application implements IAnimalMoved {
     private final GridUpdate wrappedGridUpdater = new GridUpdate();
     private final GridUpdate rectangularGridUpdater = new GridUpdate();
+    private final ChartUpdate wrappedChartUpdater = new ChartUpdate();
+    private final ChartUpdate rectChartUpdater = new ChartUpdate();
     private WrappedMap wrappedMap;
     private RectangularMap rectangularMap;
 
     private final GridPane wrappedGridPane = new GridPane();
     private final GridPane rectangularGridPane = new GridPane();
-    private Thread engineThread;
+
     private VBox menuWindow;
     ArrayList<HBox> menuParamEntrance = new ArrayList<>();
     ArrayList<Button> guiButtons = new ArrayList<>();
@@ -45,6 +52,16 @@ public class App extends Application implements IAnimalMoved {
 
     @Override
     public void start(Stage primaryStage) {
+        final NumberAxis wrappedXAxis = new NumberAxis();
+        wrappedXAxis.setForceZeroInRange( false);
+        final NumberAxis wrappedYAxis = new NumberAxis();
+        final NumberAxis rectXAxis = new NumberAxis();
+        wrappedXAxis.setForceZeroInRange( false);
+        final NumberAxis rectYAxis = new NumberAxis();
+        final LineChart<Number,Number> wrappedLineChart = new LineChart<Number, Number>(wrappedXAxis,wrappedYAxis);
+        //wrappedLineChart.setTitle("Boundaryless map chart");
+        final LineChart<Number,Number> rectLineChart = new LineChart<Number, Number>(rectXAxis,rectYAxis);
+        //rectLineChart.setTitle("Restricted map chart");
         Scene menuScene = new Scene(this.menuWindow, 600, 225);
         primaryStage.setScene(menuScene);
         primaryStage.show();
@@ -93,11 +110,23 @@ public class App extends Application implements IAnimalMoved {
                     this, moveEnergy);
             wrappedGridUpdater.update(wrappedGridPane,wrappedMap);
             rectangularGridUpdater.update(rectangularGridPane,rectangularMap);
+            Label wrappedMapLabel = new Label("Boundaryless Map"), rectMapLabel = new Label("Restricted Map");
+            wrappedMapLabel.setFont(new Font("Arial Black",20));
+            rectMapLabel.setFont(new Font("Arial Black",20));
+            VBox wrappedSimBox = new VBox(wrappedMapLabel,wrappedGridPane);
+            VBox rectSimBox = new VBox(rectMapLabel,rectangularGridPane);
+            //HBox maps = new HBox(wrappedGridPane,rectangularGridPane);
+            HBox maps = new HBox(wrappedSimBox,rectSimBox);
+            maps.setSpacing(140);
+            HBox charts = new HBox(wrappedLineChart,rectLineChart);
+            charts.setSpacing(140);
+            VBox scene = new VBox(maps,charts);
+            scene.setSpacing(50);
+            Scene simScene = new Scene(scene,1600,1000);
 
-            HBox maps = new HBox(wrappedGridPane,rectangularGridPane);
-            Scene simScene = new Scene(maps,1600,1000);
             primaryStage.setScene(simScene);
-
+            wrappedChartUpdater.setParams(wrappedLineChart,wrappedSim);
+            rectChartUpdater.setParams(rectLineChart,rectangularSim);
             Thread wrappedSimThread = new Thread(wrappedSim);
             Thread rectangularSimThread = new Thread(rectangularSim);
             wrappedSimThread.start();
@@ -137,10 +166,12 @@ public class App extends Application implements IAnimalMoved {
         if(map instanceof WrappedMap){
             wrappedGridUpdater.setParams(this.wrappedGridPane,this.wrappedMap);
             Platform.runLater(wrappedGridUpdater::run);
+            Platform.runLater(wrappedChartUpdater::run);
         }
         else{
             rectangularGridUpdater.setParams(this.rectangularGridPane,this.rectangularMap);
             Platform.runLater(rectangularGridUpdater::run);
+            Platform.runLater(rectChartUpdater::run);
         }
     }
 
@@ -190,4 +221,7 @@ public class App extends Application implements IAnimalMoved {
             throw new IllegalArgumentException("TEXT FIELD NOT FOUND");
         }
     }
+
+
+
 }

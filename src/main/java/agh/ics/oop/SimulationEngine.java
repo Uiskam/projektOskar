@@ -70,4 +70,21 @@ public class SimulationEngine implements Runnable{
     public void removeObserver(IAnimalMoved observer){
         observersList.remove(observer);
     }
+
+    public List<Integer> getAnimalQuantity(){
+        return animalQuantity;
+    }
+    public List<Integer> getGrassQuantity(){
+        return grassQuantity;
+    }
+    public List<Double> getAvgEnergyLvl(){
+        return avgEnergyLvl;
+    }
+    public List<Double> getAvgLifeLength(){
+        return avgLifeLength;
+    }
+    public List<Double> getAvgOffspringQuantity(){
+        return avgOffspringQuantity;
+    }
+
 }
