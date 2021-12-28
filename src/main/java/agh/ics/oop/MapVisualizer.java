@@ -14,6 +14,7 @@ public class MapVisualizer {
 
     /**
      * Initializes the MapVisualizer with an instance of map to visualize.
+     *
      * @param map
      */
     public MapVisualizer(IWorldMap map) {
@@ -73,7 +74,8 @@ public class MapVisualizer {
         String result = null;
         if (this.map.isOccupied(currentPosition)) {
             Object object = this.map.objectAt(currentPosition);
-            if (object != null) {;
+            if (object != null) {
+                ;
                 result = object.toString();
             } else {
                 result = EMPTY_CELL;

@@ -48,16 +48,16 @@ public enum MenuParamEntrance {
 
     public String defaultValue() {
         return switch (this) {
-            case HEIGHT -> "10";
-            case WIDTH -> "10";
+            case HEIGHT -> "20";
+            case WIDTH -> "20";
             case JUNGLE_RATIO -> "0.5";
             case START_ENERGY -> "100";
             case MOVE_ENERGY -> "5";
             case PLANT_ENERGY -> "20";
-            case INITIAL_ANIMAL_NUMBER -> "11";
+            case INITIAL_ANIMAL_NUMBER -> "30";
             case BORDERLESS_MAP_CHECK -> "borderless map: ";
             case ENCLOSED_MAP_CHECK -> "enclosed map: ";
-            case REFRESH_RATE -> "300";
+            case REFRESH_RATE -> "100";
         };
     }
 }

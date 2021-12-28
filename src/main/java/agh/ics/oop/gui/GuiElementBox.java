@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 public class GuiElementBox {
     static Image[] animalHealth;
     static Image animalSkin, grassSkin, grassSavanna, grassJungle;
+
     static {
         try {
             animalHealth = new Image[]{
@@ -28,7 +29,7 @@ public class GuiElementBox {
                     new Image(new FileInputStream("src/main/resources/health7.png")),
                     new Image(new FileInputStream("src/main/resources/health8.png")),
                     new Image(new FileInputStream("src/main/resources/health9.png")),
-                    };
+            };
             animalSkin = new Image(new FileInputStream("src/main/resources/giraffe.png"));
             grassSavanna = new Image(new FileInputStream("src/main/resources/grass.png"));
             grassJungle = new Image(new FileInputStream("src/main/resources/jungleGrass.png"));
@@ -37,19 +38,20 @@ public class GuiElementBox {
         }
 
     }
+
     StackPane mapObject;
-    public GuiElementBox(IMapElement element, Vector2d[] jungleSize,int sideLength){
+
+    public GuiElementBox(IMapElement element, Vector2d[] jungleSize, int sideLength) {
         ImageView energyLvl = null, texture;
-        if(element instanceof Animal){
+        if (element instanceof Animal) {
             int maxEnergy = ((Animal) element).getMaxEnergy();
             int currentEnergy = ((Animal) element).getEnergy();
-            int index = (int)(Math.min(10 * Math.max(0.0,currentEnergy/(double)maxEnergy),9));
+            int index = (int) (Math.min(10 * Math.max(0.0, currentEnergy / (double) maxEnergy), 9));
             energyLvl = new ImageView(animalHealth[index]);
             energyLvl.setFitWidth(sideLength);
             energyLvl.setFitHeight(sideLength);
             texture = new ImageView(animalSkin);
-        }
-        else{
+        } else {
             texture = new ImageView(grassSkin);
         }
         texture.setFitHeight(sideLength);
@@ -59,15 +61,13 @@ public class GuiElementBox {
         jungle.setFitWidth(sideLength);
         savanna.setFitHeight(sideLength);
         savanna.setFitWidth(sideLength);
-        if(energyLvl != null){
-            mapObject = new StackPane(energyLvl,texture);
-        }
-        else {
-            if(element.getPosition().follows(jungleSize[0]) && element.getPosition().precedes(jungleSize[1])){
-                mapObject = new StackPane(jungle,texture);
-            }
-            else {
-                mapObject = new StackPane(savanna,texture);
+        if (energyLvl != null) {
+            mapObject = new StackPane(energyLvl, texture);
+        } else {
+            if (element.getPosition().follows(jungleSize[0]) && element.getPosition().precedes(jungleSize[1])) {
+                mapObject = new StackPane(jungle, texture);
+            } else {
+                mapObject = new StackPane(savanna, texture);
             }
         }
 

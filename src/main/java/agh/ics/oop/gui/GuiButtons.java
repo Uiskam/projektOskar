@@ -6,7 +6,7 @@ public enum GuiButtons {
 
     int getIndex(){
         int index = 0;
-        for(GuiButtons curVal : GuiButtons.values()){
+        for (GuiButtons curVal : GuiButtons.values()){
             if(this == curVal)
                 return index;
             index++;
