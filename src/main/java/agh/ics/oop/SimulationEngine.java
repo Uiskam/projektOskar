@@ -33,9 +33,13 @@ public class SimulationEngine implements Runnable{
     }
     public void run(){
         for (int era = 0; ; era++){
-            lifeExpectancy = (lifeExpectancy + map.removeDeadAnimals()) / 2.0;
+            int[] tmp = map.removeDeadAnimals();
+            if(tmp[1] != 0){
+                lifeExpectancy = (lifeExpectancy + tmp[1]/(double)tmp[0]) / 2.0;
+            }
             map.animalMovement();
             map.animalReproduction(startEnergy);
+            map.eatGrass();
             map.addGrass();
             animalQuantity.add(map.getAnimalQuantity());
             grassQuantity.add(map.getGrassQuantity());

@@ -2,6 +2,7 @@ package agh.ics.oop.gui;
 
 import agh.ics.oop.Animal;
 import agh.ics.oop.IMapElement;
+import agh.ics.oop.Vector2d;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -13,8 +14,7 @@ import java.io.FileNotFoundException;
 
 public class GuiElementBox {
     static Image[] animalHealth;
-    static Image animalSkin;
-    static Image grassSkin;
+    static Image animalSkin, grassSkin, grassSavanna, grassJungle;
     static {
         try {
             animalHealth = new Image[]{
@@ -30,42 +30,51 @@ public class GuiElementBox {
                     new Image(new FileInputStream("src/main/resources/health9.png")),
                     };
             animalSkin = new Image(new FileInputStream("src/main/resources/giraffe.png"));
-            grassSkin = new Image(new FileInputStream("src/main/resources/grass.png"));
+            grassSavanna = new Image(new FileInputStream("src/main/resources/grass.png"));
+            grassJungle = new Image(new FileInputStream("src/main/resources/jungleGrass.png"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
     }
-    ImageView[] imageViews = new ImageView[2];
     StackPane mapObject;
-    public GuiElementBox(IMapElement element){
+    public GuiElementBox(IMapElement element, Vector2d[] jungleSize,int sideLength){
         ImageView energyLvl = null, texture;
         if(element instanceof Animal){
             int maxEnergy = ((Animal) element).getMaxEnergy();
             int currentEnergy = ((Animal) element).getEnergy();
             int index = (int)(Math.min(10 * Math.max(0.0,currentEnergy/(double)maxEnergy),9));
             energyLvl = new ImageView(animalHealth[index]);
-            energyLvl.setFitWidth(20);
-            energyLvl.setFitHeight(20);
+            energyLvl.setFitWidth(sideLength);
+            energyLvl.setFitHeight(sideLength);
             texture = new ImageView(animalSkin);
         }
         else{
             texture = new ImageView(grassSkin);
         }
-        texture.setFitHeight(20);
-        texture.setFitWidth(20);
+        texture.setFitHeight(sideLength);
+        texture.setFitWidth(sideLength);
+        ImageView jungle = new ImageView(grassJungle), savanna = new ImageView(grassSavanna);
+        jungle.setFitHeight(sideLength);
+        jungle.setFitWidth(sideLength);
+        savanna.setFitHeight(sideLength);
+        savanna.setFitWidth(sideLength);
         if(energyLvl != null){
             mapObject = new StackPane(energyLvl,texture);
-
         }
         else {
-            mapObject = new StackPane(texture);
+            if(element.getPosition().follows(jungleSize[0]) && element.getPosition().precedes(jungleSize[1])){
+                mapObject = new StackPane(jungle,texture);
+            }
+            else {
+                mapObject = new StackPane(savanna,texture);
+            }
         }
 
         mapObject.setAlignment(Pos.CENTER);
     }
 
-    public ImageView[] getStackPane() {
+    public StackPane getStackPane() {
         return mapObject;
     }
 }

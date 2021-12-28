@@ -95,7 +95,7 @@ public class App extends Application implements IAnimalMoved {
             rectangularGridUpdater.update(rectangularGridPane,rectangularMap);
 
             HBox maps = new HBox(wrappedGridPane,rectangularGridPane);
-            Scene simScene = new Scene(maps,1200,1000);
+            Scene simScene = new Scene(maps,1600,1000);
             primaryStage.setScene(simScene);
 
             Thread wrappedSimThread = new Thread(wrappedSim);

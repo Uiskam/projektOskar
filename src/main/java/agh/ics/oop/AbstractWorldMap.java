@@ -106,7 +106,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         return animalFound;
     }
 
-    public double removeDeadAnimals() {
+    public int[] removeDeadAnimals() {
         int howManyJustDied = 0, sumLifeLength = 0;
         for(Vector2d position : animalMap.keySet()){
             List<Animal> deadAnimals = new ArrayList<>();
@@ -123,7 +123,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
             howManyJustDied += deadAnimals.size();
         }
         animalMap.keySet().removeIf(position -> animalMap.get(position).isEmpty());
-        return sumLifeLength/(double)howManyJustDied;
+        return new int[]{howManyJustDied,sumLifeLength};
     }
 
     public HashMap<Vector2d, IMapElement> getObjects() {
