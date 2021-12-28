@@ -36,7 +36,7 @@ public class GuiElementBox {
         }
 
     }
-
+    ImageView[] imageViews = new ImageView[2];
     StackPane mapObject;
     public GuiElementBox(IMapElement element){
         ImageView energyLvl = null, texture;
@@ -56,16 +56,16 @@ public class GuiElementBox {
         texture.setFitWidth(20);
         if(energyLvl != null){
             mapObject = new StackPane(energyLvl,texture);
+
         }
         else {
             mapObject = new StackPane(texture);
         }
 
         mapObject.setAlignment(Pos.CENTER);
-
     }
 
-    public StackPane getVbox() {
+    public ImageView[] getStackPane() {
         return mapObject;
     }
 }

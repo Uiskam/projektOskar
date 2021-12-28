@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
 
-public class Animal implements IMapElement{
-    static int maxEnergy ;
+public class Animal implements IMapElement {
+    static int maxEnergy;
     static int moveEnergyCost;
     private Vector2d position;
     private MapDirection orientation;
@@ -16,8 +16,10 @@ public class Animal implements IMapElement{
     private final int[] genotype;
     private int energyLevel;
     private int lifeLength = 0;
+    private int offspringCounter = 0;
+
     //private final int moveEnergyCost;
-    public Animal(IWorldMap map, Vector2d initialPosition, int startEnergy, int[] givenGenotype, int moveEnergyCostInput){
+    public Animal(IWorldMap map, Vector2d initialPosition, int startEnergy, int[] givenGenotype, int moveEnergyCostInput) {
         this.map = map;
         addObserver((IPositionChangeObserver) this.map);
         moveEnergyCost = moveEnergyCostInput;
@@ -27,36 +29,51 @@ public class Animal implements IMapElement{
         Arrays.sort(this.genotype);
         this.orientation = MapDirection.values()[new Random().nextInt(MapDirection.values().length)];
     }
-    public void setMaxEnergy(int val){
+
+    public void setMaxEnergy(int val) {
         maxEnergy = val;
     }
-    public int getMaxEnergy(){
+
+    public void incrementOffspringCounter() {
+        this.offspringCounter++;
+    }
+
+    public int getOffspringCounter() {
+        return offspringCounter;
+    }
+
+    public int getMaxEnergy() {
         return maxEnergy;
     }
 
+    public int getLifeLength() {
+        return this.lifeLength;
+    }
+
     public void move(int directionChange) {
+        this.lifeLength++;
         this.energyLoss(moveEnergyCost);
         switch (directionChange) {
             case 0 -> {
                 Vector2d nextPosition = new Vector2d(this.position.x, this.position.y).add(this.orientation.toUnitVector());
-                if(map.canMoveTo(nextPosition)){
-                    if(map instanceof WrappedMap)
+                if (map.canMoveTo(nextPosition)) {
+                    if (map instanceof WrappedMap)
                         nextPosition = ((WrappedMap) map).wrapVector(nextPosition);
-                    positionChanged(this.position,nextPosition);
+                    positionChanged(this.position, nextPosition);
                     this.position = nextPosition;
 
                 }
             }
             case 4 -> {
                 Vector2d nextPosition = new Vector2d(this.position.x, this.position.y).subtract(this.orientation.toUnitVector());
-                if(map.canMoveTo(nextPosition)){
-                    if(map instanceof WrappedMap)
+                if (map.canMoveTo(nextPosition)) {
+                    if (map instanceof WrappedMap)
                         nextPosition = ((WrappedMap) map).wrapVector(nextPosition);
-                    positionChanged(this.position,nextPosition);
+                    positionChanged(this.position, nextPosition);
                     this.position = nextPosition;
                 }
             }
-            default -> IntStream.range(0,directionChange).forEach(i -> this.orientation = this.orientation.next());
+            default -> IntStream.range(0, directionChange).forEach(i -> this.orientation = this.orientation.next());
         }
     }
 
@@ -64,20 +81,22 @@ public class Animal implements IMapElement{
         return this.position.equals(pos);
     }
 
-    public void addObserver(IPositionChangeObserver observer){
+    public void addObserver(IPositionChangeObserver observer) {
         observersList.add(observer);
     }
-    public void removeObserver(IPositionChangeObserver observer){
+
+    public void removeObserver(IPositionChangeObserver observer) {
         observersList.remove(observer);
     }
 
-    private void positionChanged(Vector2d oldPosition, Vector2d newPosition){
-        for(IPositionChangeObserver observer : observersList){
-            observer.positionChanged(oldPosition,newPosition,this);
+    private void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
+        for (IPositionChangeObserver observer : observersList) {
+            observer.positionChanged(oldPosition, newPosition, this);
         }
     }
+
     @Override
-    public String textureLocation(){
+    public String textureLocation() {
         return "src/main/resources/giraffe.png";
     }
 
@@ -86,17 +105,23 @@ public class Animal implements IMapElement{
         return this.orientation.toString();
     }
 
-    public Vector2d getPosition(){
-        return new Vector2d(this.position.x,this.position.y);
+    public Vector2d getPosition() {
+        return new Vector2d(this.position.x, this.position.y);
     }
 
-    public int getEnergy() { return this.energyLevel; }
+    public int getEnergy() {
+        return this.energyLevel;
+    }
 
-    public void energyGain(int energy) {energyLevel += energy;}
+    public void energyGain(int energy) {
+        energyLevel += energy;
+    }
 
-    public void energyLoss(int energy) {energyLevel -= energy;}
+    public void energyLoss(int energy) {
+        energyLevel -= energy;
+    }
 
-    public int[] getGenotype(){
+    public int[] getGenotype() {
         return this.genotype;
     }
 }

@@ -106,10 +106,24 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         return animalFound;
     }
 
-    public void removeDeadAnimals() {
-        animalMap.keySet().forEach(position ->
-                animalMap.get(position).removeIf(animal -> animal.getEnergy() <= 0));
+    public double removeDeadAnimals() {
+        int howManyJustDied = 0, sumLifeLength = 0;
+        for(Vector2d position : animalMap.keySet()){
+            List<Animal> deadAnimals = new ArrayList<>();
+            for(Animal animal : animalMap.get(position)){
+                if(animal.getEnergy() <= 0){
+                    deadAnimals.add(animal);
+                    dominantUpdate(animal.getGenotype(),false);
+                }
+            }
+            for(Animal animal : deadAnimals){
+                sumLifeLength += animal.getLifeLength();
+                animalMap.get(position).remove(animal);
+            }
+            howManyJustDied += deadAnimals.size();
+        }
         animalMap.keySet().removeIf(position -> animalMap.get(position).isEmpty());
+        return sumLifeLength/(double)howManyJustDied;
     }
 
     public HashMap<Vector2d, IMapElement> getObjects() {
@@ -170,6 +184,8 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                         parent1 = potentialParent;
                     }
                 }
+                parent0.incrementOffspringCounter();
+                parent1.incrementOffspringCounter();
                 if (parent0.getEnergy() >= startEnergy / 2.0 && parent1.getEnergy() >= startEnergy / 2.0) {
                     int[] parent0Genotype = parent0.getGenotype(), parent1Genotype = parent1.getGenotype();
                     int genotypeLength = parent0Genotype.length;
@@ -186,6 +202,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                     parent0.energyLoss(parent0.getEnergy() / 4);
                     parent1.energyLoss(parent1.getEnergy() / 4);
                     animalMap.get(position).add(child);
+                    dominantUpdate(childGenotype, true);
                 }
             }
         }
@@ -333,6 +350,25 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                     dominantOfGenotype.replace(genotypeWord, dominantOfGenotype.get(genotypeWord) - 1);
             }
         }
+    }
+    public double getEnergySum(){
+        long energySum = 0;
+        for(Vector2d position : animalMap.keySet()){
+            for(Animal animal : animalMap.get(position)){
+                energySum += animal.getEnergy();
+            }
+        }
+        return energySum;
+    }
+
+    public int getOffspringTotal(){
+        int offspringTotal = 0;
+        for(Vector2d position : animalMap.keySet()){
+            for(Animal animal : animalMap.get(position)){
+                offspringTotal += animal.getOffspringCounter();
+            }
+        }
+        return offspringTotal;
     }
 }
 

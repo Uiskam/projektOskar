@@ -7,10 +7,14 @@ import static java.lang.System.out;
 public class SimulationEngine implements Runnable{
     private final AbstractWorldMap map;
     private final LinkedList<IAnimalMoved> observersList = new LinkedList<>();
-    private int moveDelay;
+    private final int moveDelay;
     final private int startEnergy;
     List<Integer> animalQuantity = new ArrayList<>();
-    List<Integer> grassQuantity= new ArrayList<>();
+    List<Integer> grassQuantity = new ArrayList<>();
+    List<Double> avgEnergyLvl = new ArrayList<>();
+    List<Double> avgLifeLength = new ArrayList<>();
+    List<Double> avgOffspringQuantity = new ArrayList<>();
+    private double lifeExpectancy = 0;
     public SimulationEngine(AbstractWorldMap givenMap, Set<Vector2d> position, int givenRefreshRate, int givenStartEnergy,
                             App app, int givenMoveEnergy){
         this.startEnergy = givenStartEnergy;
@@ -29,12 +33,15 @@ public class SimulationEngine implements Runnable{
     }
     public void run(){
         for (int era = 0; ; era++){
-            this.map.removeDeadAnimals();
-            this.map.animalMovement();
-            this.map.animalReproduction(this.startEnergy);
-            this.map.addGrass();
-            animalQuantity.add(this.map.getAnimalQuantity());
-            animalQuantity.add(this.map.getGrassQuantity());
+            lifeExpectancy = (lifeExpectancy + map.removeDeadAnimals()) / 2.0;
+            map.animalMovement();
+            map.animalReproduction(startEnergy);
+            map.addGrass();
+            animalQuantity.add(map.getAnimalQuantity());
+            grassQuantity.add(map.getGrassQuantity());
+            avgEnergyLvl.add(map.getEnergySum()/(double) animalQuantity.get(animalQuantity.size()-1));
+            avgLifeLength.add(lifeExpectancy);
+            avgOffspringQuantity.add(map.getOffspringTotal()/(double)map.getAnimalQuantity());
             try {
                 Thread.sleep(moveDelay);
             } catch (InterruptedException e) {

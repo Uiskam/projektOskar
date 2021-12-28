@@ -58,7 +58,7 @@ public interface IWorldMap{
     /**
      * Removes all dead animals from the map
      */
-    void removeDeadAnimals();
+    double removeDeadAnimals();
 
     /**
      *
