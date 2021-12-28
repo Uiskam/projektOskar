@@ -9,6 +9,8 @@ public class SimulationEngine implements Runnable{
     private final LinkedList<IAnimalMoved> observersList = new LinkedList<>();
     private int moveDelay;
     final private int startEnergy;
+    List<Integer> animalQuantity = new ArrayList<>();
+    List<Integer> grassQuantity= new ArrayList<>();
     public SimulationEngine(AbstractWorldMap givenMap, Set<Vector2d> position, int givenRefreshRate, int givenStartEnergy,
                             App app, int givenMoveEnergy){
         this.startEnergy = givenStartEnergy;
@@ -21,21 +23,18 @@ public class SimulationEngine implements Runnable{
             this.map.place(tmp);
         }
         this.addObserver(app);
+        if(this.map.checkForMagicSituation(this.startEnergy)){
+            ;
+        }
     }
     public void run(){
-        while (true){
+        for (int era = 0; ; era++){
             this.map.removeDeadAnimals();
-            //try {
             this.map.animalMovement();
-            /*}catch (ConcurrentModificationException ex){
-                StackTraceElement[] tmp = ex.getStackTrace();
-                for(StackTraceElement cur : tmp){
-                    out.println(cur);
-                }out.println();
-            }*/
             this.map.animalReproduction(this.startEnergy);
             this.map.addGrass();
-
+            animalQuantity.add(this.map.getAnimalQuantity());
+            animalQuantity.add(this.map.getGrassQuantity());
             try {
                 Thread.sleep(moveDelay);
             } catch (InterruptedException e) {

@@ -14,8 +14,8 @@ public enum MenuParamEntrance {
 
     int getIndex() {
         int index = 0;
-        for(MenuParamEntrance curVal : MenuParamEntrance.values()){
-            if(this == curVal)
+        for (MenuParamEntrance curVal : MenuParamEntrance.values()) {
+            if (this == curVal)
                 return index;
             index++;
         }
@@ -31,7 +31,7 @@ public enum MenuParamEntrance {
     }*/
 
     @Override
-    public String toString(){
+    public String toString() {
         return switch (this) {
             case HEIGHT -> "height: ";
             case WIDTH -> "width: ";
@@ -43,6 +43,21 @@ public enum MenuParamEntrance {
             case BORDERLESS_MAP_CHECK -> "borderless map: ";
             case ENCLOSED_MAP_CHECK -> "enclosed map: ";
             case REFRESH_RATE -> "refresh rate[ms]: ";
+        };
+    }
+
+    public String defaultValue() {
+        return switch (this) {
+            case HEIGHT -> "10";
+            case WIDTH -> "10";
+            case JUNGLE_RATIO -> "0.5";
+            case START_ENERGY -> "100";
+            case MOVE_ENERGY -> "5";
+            case PLANT_ENERGY -> "20";
+            case INITIAL_ANIMAL_NUMBER -> "11";
+            case BORDERLESS_MAP_CHECK -> "borderless map: ";
+            case ENCLOSED_MAP_CHECK -> "enclosed map: ";
+            case REFRESH_RATE -> "300";
         };
     }
 }

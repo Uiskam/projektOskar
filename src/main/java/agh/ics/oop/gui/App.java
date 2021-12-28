@@ -150,7 +150,7 @@ public class App extends Application implements IAnimalMoved {
         }
         for (MenuParamEntrance curVal : MenuParamEntrance.values()) {
             if (curVal != MenuParamEntrance.BORDERLESS_MAP_CHECK && curVal != MenuParamEntrance.ENCLOSED_MAP_CHECK) {
-                menuParamEntrance.add(new HBox(new Label(curVal.toString()), new TextField()));
+                menuParamEntrance.add(new HBox(new Label(curVal.toString()), new TextField(curVal.defaultValue())));
             } else {
                 menuParamEntrance.add(new HBox(new Label(curVal.toString()), new CheckBox()));
             }

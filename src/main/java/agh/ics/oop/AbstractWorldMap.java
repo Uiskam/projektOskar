@@ -3,16 +3,15 @@ package agh.ics.oop;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static java.lang.System.out;
-
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver {
     final protected Map<Vector2d, LinkedList<Animal>> animalMap = new ConcurrentHashMap<>();
-    final protected Map<Vector2d, Grass> grassMap = new LinkedHashMap<>();
+    final protected Map<Vector2d, Grass> grassMap = new ConcurrentHashMap<>();
     protected final Vector2d[] mapSize = {new Vector2d(0, 0), new Vector2d(0, 0)};
     protected final Vector2d[] jungleSize;
     final int moveEnergy;
     final int plantEnergy;
-
+    private int howMuchMagicHappened = 0;
+    final private Map<String, Integer> dominantOfGenotype = new HashMap<>();
     public AbstractWorldMap(int width, int height, double jungleRatio, int givenEnergyMove, int givenPlantEnergy) {//generate grass on the filed
         this.mapSize[0] = new Vector2d(0, 0);
         this.mapSize[1] = new Vector2d(width - 1, height - 1);
@@ -58,6 +57,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         if (!animalMap.containsKey(animal.getPosition())) {
             animalMap.put(animal.getPosition(), new LinkedList<>());
             animalMap.get(animal.getPosition()).add(animal);
+            this.dominantUpdate(animal.getGenotype(), true);
             return;
         }
         throw new IllegalArgumentException(animal.getPosition() + " is already occupied");
@@ -274,6 +274,65 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     public Vector2d[] getJungleSize(){
         return jungleSize;
+    }
+
+    public int getAnimalQuantity() {
+        int animalQuantity = 0;
+        for(Vector2d position : animalMap.keySet()){
+            animalQuantity += animalMap.get(position).size();
+        }
+        return animalQuantity;
+    }
+
+    public int getGrassQuantity() { return grassMap.size(); }
+
+    boolean checkForMagicSituation(int startEnergy) {
+        if(howMuchMagicHappened < 3 && this.getAnimalQuantity() == 5) {
+            howMuchMagicHappened++;
+            List<Vector2d> newPositions = new ArrayList<>();
+            Vector2d newPosition;
+            for(int i = 0; i < Math.min(5,(mapSize[1].x + 1) * (mapSize[1].y + 1) - 5); i++){
+                do {
+                    newPosition = new Vector2d(new Random().nextInt(mapSize[1].x), new Random().nextInt(mapSize[1].y));
+                }while (animalMap.containsKey(newPosition) || newPositions.contains(newPosition));
+                newPositions.add(newPosition);
+            }
+            List<Animal> newAnimals = new ArrayList<>();
+            for(Vector2d position : animalMap.keySet()){
+                for(int i = 0; i <animalMap.get(position).size(); i++){
+                    newAnimals.add(new Animal(this,newPositions.get(i), startEnergy,
+                            animalMap.get(position).get(i).getGenotype(), moveEnergy));
+                }
+            }
+            for(Animal animal : newAnimals){
+                this.place(animal);
+            }
+            return true;
+        }
+        else
+            return false;
+
+    }
+
+    private void dominantUpdate(int[] genotype, boolean mode){
+        StringBuilder genotypeWordBuilder = new StringBuilder();
+        for(int gene : genotype){
+            genotypeWordBuilder.append(gene);
+        }
+        String genotypeWord = genotypeWordBuilder.toString();
+        if (mode){
+            if(dominantOfGenotype.containsKey(genotypeWord))
+                dominantOfGenotype.replace(genotypeWord,dominantOfGenotype.get(genotypeWord) + 1);
+            else
+                dominantOfGenotype.put(genotypeWord,1);
+        } else {
+            if(dominantOfGenotype.containsKey(genotypeWord)){
+                if(dominantOfGenotype.get(genotypeWord) == 1)
+                    dominantOfGenotype.remove(genotypeWord);
+                else
+                    dominantOfGenotype.replace(genotypeWord, dominantOfGenotype.get(genotypeWord) - 1);
+            }
+        }
     }
 }
 

@@ -15,6 +15,7 @@ public class Animal implements IMapElement{
     private final List<IPositionChangeObserver> observersList = new LinkedList<>();
     private final int[] genotype;
     private int energyLevel;
+    private int lifeLength = 0;
     //private final int moveEnergyCost;
     public Animal(IWorldMap map, Vector2d initialPosition, int startEnergy, int[] givenGenotype, int moveEnergyCostInput){
         this.map = map;
