@@ -1,9 +1,2 @@
 # Maksymilian Sulima
-
-FUNKCJONALNOŚCI NIE ZAIMPLEMENTOWANE:
-- wyświetlanie dominującego genotypu
-- obsłaga "magicznego" trybu ewolucji
-- zatrzymywanie symulacji
-- wyświetalnie genotypu po kliknięciu
-- sledzenie historii zwierzaka
-- zapis statystyk do pliku
+To run a simulation download repo and type ./gradlew run in terminal
